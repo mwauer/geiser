@@ -12,19 +12,7 @@ public class Receiver {
 
 	@RabbitListener(queues="hello")
 	public void handleMessage(HelloMessageBean bean) {
-		Log.info("Got Hello "+bean.getHello());
+		Log.info("Got Hello "+bean.hello);
 	}
-	
-	
-	//public void handleMessage(byte[] message) {
-		//Log.info("Got binary "+new String(message));
-//		try {
-//			Thread.sleep(3000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-	//}
-	
 	
 }

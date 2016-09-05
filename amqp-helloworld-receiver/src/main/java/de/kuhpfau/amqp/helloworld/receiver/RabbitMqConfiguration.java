@@ -22,7 +22,6 @@ public class RabbitMqConfiguration
     public ConnectionFactory connectionFactory()
     {
     	log.info("Configured AMQP server IP is {}", amqpServerIp);
-    	//System.out.println("server ip is "+amqpServerIp);
         CachingConnectionFactory connectionFactory = new CachingConnectionFactory(amqpServerIp);
         connectionFactory.setUsername("guest");
         connectionFactory.setPassword("guest");

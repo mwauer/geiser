@@ -26,19 +26,4 @@ public class ReceiverConfiguration extends RabbitMqConfiguration {
         return factory;
     }
 
-//	@Bean
-//	public RabbitTemplate rabbitTemplate() {
-//		RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
-//		rabbitTemplate.setRoutingKey(receiverQueue);
-//		rabbitTemplate.setQueue(receiverQueue);
-//		// rabbitTemplate.setMessageConverter(jsonMessageConverter());
-//		Log.info("Created rabbit template");
-//		return rabbitTemplate;
-//	}
-
-//	@Bean
-//	public Queue receiverQueue() {
-//		return new Queue(receiverQueue, false);
-//	}
-
 }
