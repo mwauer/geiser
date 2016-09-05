@@ -9,19 +9,23 @@ public class Receiver {
 	
 	private final static Logger Log = LoggerFactory.getLogger(Receiver.class);
 
-	public void handleMessage(String message) {
-		Log.info("Got "+message);
+	public void handleMessage(HelloMessageBean bean) {
+		Log.info("Got "+bean.hello);
 	}
 	
-	public void handleMessage(byte[] message) {
-		Log.info("Got binary "+new String(message));
+	public void handleMessage(String message) {
+		Log.info("Got string "+message);
+	}
+	
+	//public void handleMessage(byte[] message) {
+		//Log.info("Got binary "+new String(message));
 //		try {
 //			Thread.sleep(3000);
 //		} catch (InterruptedException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //		}
-	}
+	//}
 	
 	
 }
