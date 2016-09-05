@@ -36,6 +36,11 @@ public class ServiceDiscoveryReceiver {
 		return new Queue("service.discovery.request", false, false, true);
 	}
 	
+	/**
+	 * Provides a service description of the hello world service for incoming requests.
+	 * @param request
+	 * @return the service discovery response
+	 */
 	@RabbitListener(queues="service.discovery.request")
 	public ServiceDiscoveryResponseBean handleServiceDiscoveryRequest(ServiceDiscoveryRequestBean request) {
 		log.info("got a service discovery request");
