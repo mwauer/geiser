@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author mwauer
  *
  */
-public class HelloMessageBean {
+public class HelloMessage {
 
-	@JsonProperty("Hello")
+	@JsonProperty(value="Hello", required=true)
 	public String hello;
 
 }

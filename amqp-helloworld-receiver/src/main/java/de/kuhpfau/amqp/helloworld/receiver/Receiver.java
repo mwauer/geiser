@@ -12,7 +12,7 @@ public class Receiver {
 	
 	private final static Logger Log = LoggerFactory.getLogger(Receiver.class);
 
-	public HelloMessageBean lastHello;
+	public HelloMessage lastHello;
 	
 	@Bean
 	public Queue helloQueue() {
@@ -20,7 +20,7 @@ public class Receiver {
 	}
 	
 	@RabbitListener(queues="hello")
-	public void handleMessage(HelloMessageBean bean) {
+	public void handleMessage(HelloMessage bean) {
 		this.lastHello = bean;
 		Log.info("Got Hello "+bean.hello);
 	}

@@ -2,6 +2,8 @@ package de.kuhpfau.amqp.helloworld.receiver;
 
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,21 +12,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = AmqpHelloworldReceiverApplication.class)
-public class ReceiverTest {
+public class ServiceDiscoveryReceiverTest {
 
 	@Autowired
-	private Receiver receiver;
+	public ServiceDiscoveryReceiver receiver;
 	
-	/**
-	 * Validates that the last hello message is stored when handling a message.
-	 */
 	@Test
-	public void testHandleMessage() {
-		assertNull(receiver.lastHello);
-		HelloMessage helloMessageBean = new HelloMessage();
-		helloMessageBean.hello = "test";
-		receiver.handleMessage(helloMessageBean);
-		assertEquals("test", receiver.lastHello.hello);
+	public void testHandleServiceDiscoveryRequest() {
+		ServiceDiscoveryResponse response = receiver.handleServiceDiscoveryRequest(new ServiceDiscoveryRequest(), new HashMap<>());
+		assertNotNull(response.service);
+		assertNotNull(response.type);
+		assertNotNull(response.requestSchema);
+		assertEquals("A sample hello world service", response.requestSchema.getDescription());
 	}
 
 }

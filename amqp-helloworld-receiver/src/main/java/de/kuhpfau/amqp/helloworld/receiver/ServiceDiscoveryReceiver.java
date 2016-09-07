@@ -13,6 +13,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
+
 /**
  * Global receiver of service discovery ping messages.
  * 
@@ -57,13 +61,19 @@ public class ServiceDiscoveryReceiver {
 	 * @return the service discovery response
 	 */
 	@RabbitListener(bindings = @QueueBinding(exchange = @Exchange(value = "service.discovery.request", type = ExchangeTypes.TOPIC), value = @org.springframework.amqp.rabbit.annotation.Queue))
-	public ServiceDiscoveryResponseBean handleServiceDiscoveryRequest(ServiceDiscoveryRequestBean request,
+	public ServiceDiscoveryResponse handleServiceDiscoveryRequest(ServiceDiscoveryRequest request,
 			@Headers Map<String, Object> headers) {
 		log.info("got a service discovery request, headers: {}", headers);
-		ServiceDiscoveryResponseBean responseBean = new ServiceDiscoveryResponseBean();
+		ServiceDiscoveryResponse responseBean = new ServiceDiscoveryResponse();
 		responseBean.service = "HelloWorld";
 		responseBean.type = "example";
-		responseBean.accept = "{\"title\": \"Hello World Service Schema\", \"type\": \"object\", \"properties\": { \"Hello\": { \"type\": \"string\" } }, \"required\": [\"Hello\"]}";
+		//responseBean.accept = null;//"{\"title\": \"Hello World Service Schema\", \"type\": \"object\", \"properties\": { \"Hello\": { \"type\": \"string\" } }, \"required\": [\"Hello\"]}";
+		try {
+			responseBean.requestSchema = new JsonSchemaGenerator(new ObjectMapper()).generateSchema(HelloMessage.class);
+			responseBean.requestSchema.setDescription("A sample hello world service");
+		} catch (JsonMappingException e) {
+			log.warn("failed to generate json schema for hello message bean:", e);
+		}
 		return responseBean;
 	}
 
