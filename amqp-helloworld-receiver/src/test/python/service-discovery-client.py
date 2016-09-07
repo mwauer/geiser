@@ -1,11 +1,38 @@
 #!/usr/bin/env python
+"""Service Discovery Client
+
+This script demonstrates how to request service description information from
+GEISER services.
+
+Example:
+	Prerequisites are: a running RabbitMQ (for this script we assume it's
+	running on localhost, if you run e.g. a docker image at IP 172.17.0.3
+	without port forwarding, please modify the connection parameter
+	accordingly). And you should have some service(s) running which have
+	a ServiceDiscoveryReceiver, e.g.,
+	
+		$ java -jar target/amqp-hellowworld-receiver-0.0.1-SNAPSHOT.jar
+		
+	Then you can invoke the service discovery client. It sends a service
+	discovery request (which is an empty JSON object as of now) to the
+	message broker. All services are listening to the exchange called
+	"service.discovery.request" with their individual queues, answering
+	with respective responses (see ServiceDiscoveryResponse class). The
+	script waits up to 5 seconds until it presents the received service
+	descriptions to the user:
+	
+		$ python service-discovery-client.py
+	
+
+"""
+
 import pika
 import uuid
 
 class ServiceDiscoveryRpcClient(object):
     def __init__(self):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(
-                host='172.17.0.3'))
+                host='localhost'))
 
         self.channel = self.connection.channel()
 
