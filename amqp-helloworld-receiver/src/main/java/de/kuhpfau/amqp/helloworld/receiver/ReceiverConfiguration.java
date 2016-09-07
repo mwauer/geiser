@@ -15,15 +15,15 @@ public class ReceiverConfiguration extends RabbitMqConfiguration {
 	private final static Logger Log = LoggerFactory.getLogger(ReceiverConfiguration.class);
 
 	@Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory());
-        factory.setConcurrentConsumers(3);
-        factory.setMaxConcurrentConsumers(10);
-        // set json converter
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
-        Log.debug("configured json converter");
-        return factory;
-    }
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+		SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory());
+		factory.setConcurrentConsumers(3);
+		factory.setMaxConcurrentConsumers(10);
+		// set json converter
+		factory.setMessageConverter(new Jackson2JsonMessageConverter());
+		Log.debug("configured json converter");
+		return factory;
+	}
 
 }
