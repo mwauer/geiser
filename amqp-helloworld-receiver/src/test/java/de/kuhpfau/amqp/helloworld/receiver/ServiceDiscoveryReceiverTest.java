@@ -16,10 +16,11 @@ public class ServiceDiscoveryReceiverTest {
 
 	@Autowired
 	public ServiceDiscoveryReceiver receiver;
-	
+
 	@Test
 	public void testHandleServiceDiscoveryRequest() {
-		ServiceDiscoveryResponse response = receiver.handleServiceDiscoveryRequest(new ServiceDiscoveryRequest(), new HashMap<>());
+		ServiceDiscoveryResponse response = receiver.handleServiceDiscoveryRequest(new ServiceDiscoveryRequest(),
+				new HashMap<>());
 		assertNotNull(response.service);
 		assertNotNull(response.type);
 		assertNotNull(response.requestSchema);
