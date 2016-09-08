@@ -1,4 +1,4 @@
-package de.kuhpfau.amqp.helloworld.receiver;
+package de.kuhpfau.amqp.servicediscovery;
 
 import java.util.Map;
 
@@ -24,9 +24,11 @@ import com.fasterxml.jackson.module.jsonSchema.JsonSchemaGenerator;
  *
  */
 @Component
-public class ServiceDiscoveryReceiver {
+public abstract class AbstractServiceDiscoveryReceiver {
 
-	private static final Logger log = LoggerFactory.getLogger(ServiceDiscoveryReceiver.class);
+	private static final Logger log = LoggerFactory.getLogger(AbstractServiceDiscoveryReceiver.class);
+
+	protected static JsonSchemaGenerator generator = new JsonSchemaGenerator(new ObjectMapper());
 
 	// @Bean
 	// public Queue serviceDiscoveryResponseQueue() {
@@ -44,18 +46,20 @@ public class ServiceDiscoveryReceiver {
 	// {}", response.type, response.service, response.accept);
 	// }
 
-//	@Autowired
-//	private AmqpAdmin amqpAdmin;
+	// @Autowired
+	// private AmqpAdmin amqpAdmin;
 
 	@Bean
 	public Queue serviceDiscoveryRequestQueue() {
-		// amqpAdmin.
 		return new Queue("service.discovery.request", false, false, true);
 	}
 
 	/**
 	 * Provides a service description of the hello world service for incoming
 	 * requests.
+	 * 
+	 * TODO: test if we can override the exchange key (routing key) in concrete
+	 * classes.
 	 * 
 	 * @param request
 	 * @return the service discovery response
@@ -65,16 +69,60 @@ public class ServiceDiscoveryReceiver {
 			@Headers Map<String, Object> headers) {
 		log.info("got a service discovery request, headers: {}", headers);
 		ServiceDiscoveryResponse responseBean = new ServiceDiscoveryResponse();
-		responseBean.service = "HelloWorld";
-		responseBean.type = "example";
-		//responseBean.accept = null;//"{\"title\": \"Hello World Service Schema\", \"type\": \"object\", \"properties\": { \"Hello\": { \"type\": \"string\" } }, \"required\": [\"Hello\"]}";
+		responseBean.service = getServiceName();
+		responseBean.type = getServiceType();
+		// responseBean.accept = null;//"{\"title\": \"Hello World Service
+		// Schema\", \"type\": \"object\", \"properties\": { \"Hello\": {
+		// \"type\": \"string\" } }, \"required\": [\"Hello\"]}";
 		try {
-			responseBean.requestSchema = new JsonSchemaGenerator(new ObjectMapper()).generateSchema(HelloMessage.class);
-			responseBean.requestSchema.setDescription("A sample hello world service");
+			responseBean.requestSchema = generator.generateSchema(getRequestMessageClass());
+			responseBean.requestSchema.setDescription(getRequestMessageDescription());
+			if (getResponseMessageClass() != null) {
+				responseBean.responseSchema = generator.generateSchema(getResponseMessageClass());
+				responseBean.responseSchema.setDescription(getResponseMessageDescription());
+			}
 		} catch (JsonMappingException e) {
 			log.warn("failed to generate json schema for hello message bean:", e);
 		}
 		return responseBean;
+	}
+
+	/**
+	 * @return the service name to be included in the service discovery response
+	 */
+	public abstract String getServiceName();
+
+	/**
+	 * @return the service tpe to be included in hte service discovery response
+	 */
+	public abstract String getServiceType();
+
+	/**
+	 * @return the class describing a request to the service, from which the
+	 *         JSON schema will be generated.
+	 */
+	public abstract Class<?> getRequestMessageClass();
+
+	/**
+	 * @return a description of a request to the service, to be added to the
+	 *         JSON schema.
+	 */
+	public abstract String getRequestMessageDescription();
+
+	/**
+	 * @return the class describing the response of the service, from which the
+	 *         JSON schema will be generated. May return <code>null</code>.
+	 */
+	public Class<?> getResponseMessageClass() {
+		return null;
+	}
+
+	/**
+	 * @return a description of a response of the service, to be added to the
+	 *         JSON schema.
+	 */
+	public String getResponseMessageDescription() {
+		return null;
 	}
 
 }

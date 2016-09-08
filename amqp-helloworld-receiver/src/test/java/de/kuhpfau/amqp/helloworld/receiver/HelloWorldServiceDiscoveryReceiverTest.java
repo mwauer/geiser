@@ -1,6 +1,7 @@
 package de.kuhpfau.amqp.helloworld.receiver;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashMap;
 
@@ -10,12 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import de.kuhpfau.amqp.helloworld.receiver.AmqpHelloworldReceiverApplication;
+import de.kuhpfau.amqp.helloworld.receiver.HelloWorldServiceDiscoveryReceiver;
+import de.kuhpfau.amqp.servicediscovery.ServiceDiscoveryRequest;
+import de.kuhpfau.amqp.servicediscovery.ServiceDiscoveryResponse;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = AmqpHelloworldReceiverApplication.class)
-public class ServiceDiscoveryReceiverTest {
+public class HelloWorldServiceDiscoveryReceiverTest {
 
 	@Autowired
-	public ServiceDiscoveryReceiver receiver;
+	public HelloWorldServiceDiscoveryReceiver receiver;
 
 	@Test
 	public void testHandleServiceDiscoveryRequest() {

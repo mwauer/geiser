@@ -1,4 +1,4 @@
-package de.kuhpfau.amqp.helloworld.receiver;
+package de.kuhpfau.amqp.servicediscovery;
 
 import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
 
