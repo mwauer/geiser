@@ -1,0 +1,196 @@
+@prefix dc:      <http://purl.org/dc/elements/1.1/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vann:    <http://purl.org/vocab/vann/> .
+@prefix vs:      <http://www.w3.org/2003/06/sw-vocab-status/ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix geiser:  <http://geiser-projekt.de/vocab/geiser#> .
+@prefix amqp:    <http://geiser-projekt.de/vocab/amqp#> .
+
+geiser:   rdf:type owl:Ontology;
+          dc:created "2016/06/21 12:00:00";
+          dc:date "2016/11/18 16:54:20";
+          dc:description """
+            The GEISER ontology provides classes and properties for specifying
+            message exchanges between components on the GEISER platform.
+          """ ;
+          dc:title "GEISER ontology" ;
+          vann:preferredNamespacePrefix "geiser" ;
+          vann:preferredNamespaceUri "http://geiser-projekt.de/vocab/geiser#" ;
+          owl:versionInfo "Revision: 1.0.0" ;
+          foaf:maker <https://mwauer.github.io/foaf.ttl> .
+
+geiser:Message
+          rdf:type owl:Class ;
+          rdfs:comment "A message sent between GEISER components" ;
+          rdfs:isDefinedBy geiser: ;
+          rdfs:label "Message" ;
+          rdfs:subClassOf owl:Thing ;
+          vs:term_status "stable" .
+
+geiser:Service
+          rdf:type owl:Class ;
+          rdfs:comment "A GEISER service component" ;
+          rdfs:isDefinedBy geiser: ;
+          rdfs:label "Service" ;
+          rdfs:subClassOf owl:Thing ;
+          vs:term_status "testing" .
+
+geiser:content
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Contains the content of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy geiser: ;
+          rdfs:label "has content" ;
+          vs:term_status "stable" .
+
+amqp:     rdf:type owl:Ontology;
+          dc:created "2016/06/21 12:00:00";
+          dc:date "2016/11/18 16:54:20";
+          dc:description """
+            The GEISER AMQP ontology provides properties for specifying
+            AMQP basic message properties.
+          """ ;
+          dc:title "GEISER AMQP ontology" ;
+          vann:preferredNamespacePrefix "amqp" ;
+          vann:preferredNamespaceUri "http://geiser-projekt.de/vocab/amqp#" ;
+          owl:versionInfo "Revision: 1.0.0" ;
+          foaf:maker <https://mwauer.github.io/foaf.ttl> .
+
+amqp:content-type
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "MIME type of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has content type" ;
+          vs:term_status "stable" .
+
+amqp:content-encoding
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Encoding of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has content encoding" ;
+          vs:term_status "stable" .
+
+amqp:header
+          rdf:type owl:ObjectProperty ;
+          rdfs:comment "Additional headers of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range rdf:Seq ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has headers" ;
+          vs:term_status "unstable" .
+
+amqp:header-key
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Key of a header of a GEISER message" ;
+          rdfs:domain amqp:header ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has key" ;
+          vs:term_status "unstable" .
+
+amqp:header-value
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Value of a header of a GEISER message" ;
+          rdfs:domain amqp:header ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has value" ;
+          vs:term_status "unstable" .
+
+amqp:delivery-mode
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Delivery mode of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:byte ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has delivery mode" ;
+          vs:term_status "stable" .
+
+amqp:priority
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Priority of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:byte ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has priority" ;
+          vs:term_status "stable" .
+
+amqp:correlation-id
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Correlation identifier of a GEISER message interaction" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has correlation ID" ;
+          vs:term_status "stable" .
+
+amqp:reply-to
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Reply-to property of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has reply-to" ;
+          vs:term_status "stable" .
+
+amqp:expiration
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Expiration of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "expires at" ;
+          vs:term_status "stable" .
+
+amqp:message-id
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Message identfier of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has message ID" ;
+          vs:term_status "stable" .
+
+amqp:timestamp
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Timestamp of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:dateTime ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has timestamp" ;
+          vs:term_status "stable" .
+
+amqp:type
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Type of a GEISER message" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has message type" ;
+          vs:term_status "unstable" .
+
+amqp:user-id
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "User identifier of a GEISER message sender" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has user ID" ;
+          vs:term_status "unstable" .
+
+amqp:app-id
+          rdf:type owl:DatatypeProperty ;
+          rdfs:comment "Application identifier of a GEISER message sender service" ;
+          rdfs:domain geiser:Message ;
+          rdfs:range xsd:string ;
+          rdfs:isDefinedBy amqp: ;
+          rdfs:label "has app ID" ;
+          vs:term_status "unstable" .
