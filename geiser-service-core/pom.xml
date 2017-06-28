@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.aksw.geiser</groupId>
+  <artifactId>geiser-service-core</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>GEISER Service Core Library</name>
+  <description>Core functionality and abstract implementation of a GEISER AMQP service</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.fasterxml.jackson.module</groupId>
+  		<artifactId>jackson-module-jsonSchema</artifactId>
+  		<version>2.8.9</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.springframework.amqp</groupId>
+  		<artifactId>spring-rabbit</artifactId>
+  		<version>1.7.3.RELEASE</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.hibernate</groupId>
+  		<artifactId>hibernate-validator</artifactId>
+  		<version>5.4.1.Final</version>
+  	</dependency>
+  </dependencies>
+</project>
