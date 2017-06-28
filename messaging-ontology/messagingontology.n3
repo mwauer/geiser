@@ -44,7 +44,7 @@ geiser:content
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy geiser: ;
-          rdfs:label "has content" ;
+          rdfs:label "content" ;
           vs:term_status "stable" .
 
 amqp:     rdf:type owl:Ontology;
@@ -66,7 +66,7 @@ amqp:content-type
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has content type" ;
+          rdfs:label "content type" ;
           vs:term_status "stable" .
 
 amqp:content-encoding
@@ -75,7 +75,7 @@ amqp:content-encoding
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has content encoding" ;
+          rdfs:label "content encoding" ;
           vs:term_status "stable" .
 
 amqp:header
@@ -84,7 +84,7 @@ amqp:header
           rdfs:domain geiser:Message ;
           rdfs:range rdf:Seq ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has headers" ;
+          rdfs:label "headers" ;
           vs:term_status "unstable" .
 
 amqp:header-key
@@ -93,7 +93,7 @@ amqp:header-key
           rdfs:domain amqp:header ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has key" ;
+          rdfs:label "key" ;
           vs:term_status "unstable" .
 
 amqp:header-value
@@ -102,7 +102,7 @@ amqp:header-value
           rdfs:domain amqp:header ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has value" ;
+          rdfs:label "value" ;
           vs:term_status "unstable" .
 
 amqp:delivery-mode
@@ -111,7 +111,7 @@ amqp:delivery-mode
           rdfs:domain geiser:Message ;
           rdfs:range xsd:byte ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has delivery mode" ;
+          rdfs:label "delivery mode" ;
           vs:term_status "stable" .
 
 amqp:priority
@@ -120,7 +120,7 @@ amqp:priority
           rdfs:domain geiser:Message ;
           rdfs:range xsd:byte ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has priority" ;
+          rdfs:label "priority" ;
           vs:term_status "stable" .
 
 amqp:correlation-id
@@ -129,7 +129,7 @@ amqp:correlation-id
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has correlation ID" ;
+          rdfs:label "correlation ID" ;
           vs:term_status "stable" .
 
 amqp:reply-to
@@ -138,7 +138,7 @@ amqp:reply-to
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has reply-to" ;
+          rdfs:label "reply-to" ;
           vs:term_status "stable" .
 
 amqp:expiration
@@ -156,7 +156,7 @@ amqp:message-id
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has message ID" ;
+          rdfs:label "message ID" ;
           vs:term_status "stable" .
 
 amqp:timestamp
@@ -165,7 +165,7 @@ amqp:timestamp
           rdfs:domain geiser:Message ;
           rdfs:range xsd:dateTime ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has timestamp" ;
+          rdfs:label "timestamp" ;
           vs:term_status "stable" .
 
 amqp:type
@@ -174,7 +174,7 @@ amqp:type
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has message type" ;
+          rdfs:label "message type" ;
           vs:term_status "unstable" .
 
 amqp:user-id
@@ -183,7 +183,7 @@ amqp:user-id
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has user ID" ;
+          rdfs:label "user ID" ;
           vs:term_status "unstable" .
 
 amqp:app-id
@@ -192,5 +192,5 @@ amqp:app-id
           rdfs:domain geiser:Message ;
           rdfs:range xsd:string ;
           rdfs:isDefinedBy amqp: ;
-          rdfs:label "has app ID" ;
+          rdfs:label "app ID" ;
           vs:term_status "unstable" .
