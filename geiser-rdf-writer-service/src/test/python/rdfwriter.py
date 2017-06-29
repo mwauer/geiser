@@ -12,9 +12,13 @@ channel = connection.channel()
 
 properties = pika.BasicProperties(content_type='text/turtle')
 
+statements = raw_input('Please enter the statements in Turtle notation. Default: "<urn:r1> <urn:p1> <urn:r2>."')
+if not statements:
+	statements = '<urn:r1> <urn:p1> <urn:r2>.'
+
 channel.basic_publish(exchange='',
                       routing_key='rdfwriter',
-                      body='<urn:r1> <urn:p1> <urn:r2>.',
+                      body=statements,
 		      properties=properties)
-print(" [x] Sent simple RDF statement as turtle")
+print(" [x] Sent simple RDF statement(s) as turtle")
 connection.close()

@@ -4,8 +4,9 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 
-
+@Configuration
 public abstract class GeiserJsonServiceConfiguration extends GeiserServiceConfiguration implements InitializingBean {
 	
 	@Autowired
