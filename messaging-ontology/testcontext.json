@@ -1,0 +1,7 @@
+{
+  "@context": {
+    "geiser": "http://geiser-projekt.de/vocab/geiser#",
+    "amqp": "http://geiser-projekt.de/vocab/amqp#",
+    "Message": {"@id": "geiser:Message"}
+  }
+}
