@@ -1,6 +1,6 @@
 {
   "@context": {
     "@vocab": "http://geiser-projekt.de/vocab/geiser#",
-    "amqp": "http://geiser-projekt.de/vocab/amqp#",
+    "amqp": "http://geiser-projekt.de/vocab/amqp#"
   }
 }
