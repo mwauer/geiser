@@ -15,24 +15,24 @@ public class RabbitMqConfiguration
 {
 	static final Logger log = LoggerFactory.getLogger(RabbitMqConfiguration.class);
 	
-	@Value("${amqp.server.ip:127.0.0.1}")
-	private String amqpServerIp;
+	@Value("${amqp_server_host:rabbit}")
+	private String amqpServerHost;
 	
-	@Value("${amqp.server.port:5672}")
+	@Value("${amqp_server_port:5672}")
 	private Integer amqpServerPort;
 	
-	@Value("${amqp.server.username:guest}")
+	@Value("${amqp_server_username:guest}")
 	private String amqpUsername;
 	
-	@Value("${amqp.server.password:guest}")
+	@Value("${amqp_server_password:guest}")
 	private String amqpPassword;
 	
 	
     @Bean
     public ConnectionFactory connectionFactory()
     {
-    	log.info("Configured AMQP server IP is {}", amqpServerIp);
-        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(amqpServerIp, amqpServerPort);
+    	log.info("Configured AMQP server IP is {}", amqpServerHost);
+        CachingConnectionFactory connectionFactory = new CachingConnectionFactory(amqpServerHost, amqpServerPort);
         connectionFactory.setUsername(amqpUsername);
         connectionFactory.setPassword(amqpPassword);
         return connectionFactory;

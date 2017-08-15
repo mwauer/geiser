@@ -2,6 +2,7 @@ package org.aksw.geiser.service.discovery;
 
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -62,12 +63,12 @@ public abstract class AbstractServiceDiscoveryReceiver {
 	 * classes.
 	 * 
 	 * @param request
-	 * @return the service discovery response
+	 * @return the service discovery response if the service matches the request
 	 */
 	@RabbitListener(bindings = @QueueBinding(exchange = @Exchange(value = "service.discovery.request", type = ExchangeTypes.TOPIC), value = @org.springframework.amqp.rabbit.annotation.Queue))
 	public ServiceDiscoveryResponse handleServiceDiscoveryRequest(ServiceDiscoveryRequest request,
 			@Headers Map<String, Object> headers) {
-		
+
 		ServiceDiscoveryResponse responseBean = new ServiceDiscoveryResponse();
 		responseBean.service = getServiceName();
 		responseBean.type = getServiceType();
@@ -82,6 +83,21 @@ public abstract class AbstractServiceDiscoveryReceiver {
 			log.warn("failed to generate json schema for hello message bean:", e);
 		}
 		return responseBean;
+	}
+
+	/**
+	 * @param request
+	 *            a {@link ServiceDiscoveryRequest}
+	 * @return whether the request matches this {@link #getServiceName()} and
+	 *         {@link #getServiceType()}. <code>null</code> queries are
+	 *         considered to match.
+	 */
+	protected boolean matchesRequest(ServiceDiscoveryRequest request) {
+		boolean matchesServiceName = request.serviceQuery == null ? true
+				: FilenameUtils.wildcardMatch(getServiceName(), request.serviceQuery);
+		boolean matchesType = request.typeQuery == null ? true
+				: FilenameUtils.wildcardMatch(getServiceType(), request.typeQuery);
+		return matchesServiceName && matchesType;
 	}
 
 	/**
