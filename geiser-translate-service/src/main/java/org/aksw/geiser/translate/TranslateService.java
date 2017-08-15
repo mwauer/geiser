@@ -11,6 +11,7 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -27,6 +28,9 @@ public class TranslateService {
 	
 	@Autowired
 	private Translator translator;
+	
+//	@Autowired
+//	private RabbitTemplate rabbitTemplate;
 	
 	@Bean
 	public Queue translateQueue() {
@@ -58,9 +62,9 @@ public class TranslateService {
 		JSONObject translation = new JSONObject();
 		translation.put("original", attributeValue.toString());
 		if (translated.getDetectedLanguage().isPresent()) {
-			translation.put("detectedSourceLanguage", translated.getDetectedLanguage());
+			translation.put("detectedSourceLanguage", translated.getDetectedLanguage().get());
 		}
-		parentElement.append("translation", translation);
+		parentElement.put("translation", translation);
 		
 		String resultJsonString = jsonObject.toString();
 		log.debug(" updated in json: {}", resultJsonString);
