@@ -1,0 +1,34 @@
+version: '2'
+services:
+  fox-proxy:
+    image: mwauer/fox-proxy
+    links:
+      - fox:fox
+      - rabbit:rabbit
+    environment:
+      - MICROPROXY_RABBIT_HOST=amqp://rabbit:5672/
+      - FOX_URL=http://fox:4444/fox
+    depends_on:
+      - rabbit
+    ports:
+      - 8080:8080
+
+  fox:
+    image: mwauer/fox:2.3.0
+    environment:
+      - LNG=en
+
+  rabbit:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 8081:15672
+
+  geiser-translate:
+    image: mwauer/geiser-translate-service
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+    environment:
+      - translate_api_key=TO_BE_CONFIGURED!

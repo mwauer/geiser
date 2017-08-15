@@ -23,7 +23,7 @@ public class TranslateService {
 	private static final Logger log = LoggerFactory.getLogger(TranslateService.class);
 	
 	@Autowired
-	private String[] attributePath = new String[] {"data", "text"};
+	private String[] attributePath; // = new String[] {"data", "text"};
 	
 	@Autowired
 	private Translator translator;
@@ -34,8 +34,9 @@ public class TranslateService {
 	}
 
 	@RabbitListener(queues = "translate")
-	// TODO don't hardcode
-	@SendTo("fox-v1")
+	// TODO needs to be processed based on message header of input message
+	// TODO error handling
+	@SendTo("${translate_target_routingkey:fox_v1}")
 	public Message handleTranslateMessage(
 			@Payload Message payload/* , @Headers Map<String, Object> headers */) throws JSONException {
 		

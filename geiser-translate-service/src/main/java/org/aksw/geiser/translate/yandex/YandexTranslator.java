@@ -11,7 +11,7 @@ import com.github.vbauer.yta.service.YTranslateApiImpl;
 
 public class YandexTranslator implements Translator {
 
-	@Value("${translate.api.key}")
+	@Value("${translate_api_key}")
 	private String apiKey;
 	
 	@Override
