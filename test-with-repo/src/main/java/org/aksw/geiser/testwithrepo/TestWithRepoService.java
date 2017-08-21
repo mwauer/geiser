@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * @author wauer
  *
  */
-@Component
+//@Component
 public class TestWithRepoService {
 
 	private static final Logger log = LoggerFactory.getLogger(TestWithRepoService.class);
