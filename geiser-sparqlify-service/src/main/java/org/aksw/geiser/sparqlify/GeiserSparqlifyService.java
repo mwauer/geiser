@@ -3,8 +3,8 @@ package org.aksw.geiser.sparqlify;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.aksw.geiser.util.ServiceUtils;
 import org.antlr.runtime.RecognitionException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -42,8 +42,8 @@ public class GeiserSparqlifyService {
 		String resultTurtle = processor.process(request);
 		Message result = MessageBuilder.withBody(resultTurtle.getBytes(StandardCharsets.UTF_8))
 				.setContentType("text/turtle;charset=utf-8").build();
-		rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(),
-				StringUtils.removeStart(message.getMessageProperties().getReceivedRoutingKey(), ROUTING_KEY), result);
+		rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(), ServiceUtils.nextRoutingKey(message),
+				result);
 	}
 
 }
