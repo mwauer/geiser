@@ -1,30 +1,42 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.aksw.geiser</groupId>
-  <artifactId>geiser-service-core</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <name>GEISER Service Core Library</name>
-  <description>Core functionality and abstract implementation of a GEISER AMQP service</description>
-  <dependencies>
-  	<dependency>
-  		<groupId>com.fasterxml.jackson.module</groupId>
-  		<artifactId>jackson-module-jsonSchema</artifactId>
-  		<version>2.8.9</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.springframework.amqp</groupId>
-  		<artifactId>spring-rabbit</artifactId>
-  		<version>1.7.3.RELEASE</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.hibernate</groupId>
-  		<artifactId>hibernate-validator</artifactId>
-  		<version>5.4.1.Final</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>org.apache.commons</groupId>
-  		<artifactId>commons-io</artifactId>
-  		<version>1.3.2</version>
-  	</dependency>
-  </dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.aksw.geiser</groupId>
+	<artifactId>geiser-service-core</artifactId>
+	<version>0.0.2</version>
+	<name>GEISER Service Core Library</name>
+	<description>Core functionality and abstract implementation of a GEISER AMQP service</description>
+	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-jsonSchema</artifactId>
+			<version>2.8.9</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<version>1.7.3.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.4.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.3.2</version>
+		</dependency>
+	</dependencies>
+	<distributionManagement>
+		<repository>
+			<id>maven.aksw.internal</id>
+			<url>http://maven.aksw.org/archiva/repository/internal</url>
+		</repository>
+		<snapshotRepository>
+			<id>maven.aksw.snapshots</id>
+			<name>AKSW Snapshot Repository</name>
+			<url>http://maven.aksw.org/archiva/repository/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
