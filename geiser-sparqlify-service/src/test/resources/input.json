@@ -1,0 +1,8 @@
+{
+	"config": {
+		"contentType":"text/sml",
+		"data":"Prefix lgdo: <http:\/\/linkedgeodata.org\/ontology\/>\r\nPrefix rdfs: <http:\/\/www.w3.org\/2000\/01\/rdf-schema#>\r\nPrefix geo: <http:\/\/www.w3.org\/2003\/01\/geo\/wgs84_pos#>\r\nPrefix xsd: <http:\/\/www.w3.org\/2001\/XMLSchema#>\r\nPrefix fn: <http:\/\/aksw.org\/sparqlify\/>\r\nCreate View Template geocode As\r\nConstruct {\r\n?cityUri\r\na lgdo:City ;\r\nrdfs:label ?cityLabel ;\r\ngeo:long ?long ;\r\ngeo:lat ?lat .\r\n}\r\nWith\r\n?cityUri =\r\nuri(concat(\r\n\"http:\/\/ex.org\/\",\r\nfn:urlEncode(?2), \"-\", fn:urlEncode(?1)))\r\n?cityLabel = plainLiteral(?1)\r\n?long = typedLiteral(?3, xsd:float)\r\n?lat = typedLiteral(?4, xsd:float)",
+		"viewName":"geocode"
+	},
+	"data":"city,country,long,lat\nLeipzig,Germany,12.3833,51.3333"
+}
