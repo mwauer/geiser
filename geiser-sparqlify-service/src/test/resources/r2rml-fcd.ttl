@@ -1,0 +1,31 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+
+<#fcd>
+    <http://www.w3.org/ns/r2rml#logicalTable> [
+            <http://www.w3.org/ns/r2rml#tableName> "fcd" ] ;
+
+    <http://www.w3.org/ns/r2rml#subjectMap> [
+            <http://www.w3.org/ns/r2rml#template> "http://example.org/fcd{timestamp}" ;
+            <http://www.w3.org/ns/r2rml#class> <http://example.org/FloatingCarData>  ;
+            <http://www.w3.org/ns/r2rml#graph> <http://example.org/graph01> ] ;
+
+    <http://www.w3.org/ns/r2rml#predicateObjectMap> [
+            <http://www.w3.org/ns/r2rml#predicate> <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ;
+
+            <http://www.w3.org/ns/r2rml#objectMap> [
+                    <http://www.w3.org/ns/r2rml#column> "latitude";
+                    <http://www.w3.org/ns/r2rml#datatype> xsd:double  ] ] ;
+
+    <http://www.w3.org/ns/r2rml#predicateObjectMap> [
+            <http://www.w3.org/ns/r2rml#predicate> <http://www.w3.org/2003/01/geo/wgs84_pos#long> ;
+
+            <http://www.w3.org/ns/r2rml#objectMap> [
+                    <http://www.w3.org/ns/r2rml#column> "longitude";
+                    <http://www.w3.org/ns/r2rml#datatype> xsd:double  ] ] ;
+                    
+    <http://www.w3.org/ns/r2rml#predicateObjectMap> [
+            <http://www.w3.org/ns/r2rml#predicate> <http://dbpedia.org/ontology/Planet/averageSpeed> ;
+
+            <http://www.w3.org/ns/r2rml#objectMap> [
+                    <http://www.w3.org/ns/r2rml#column> "speed m/s";
+                    <http://www.w3.org/ns/r2rml#datatype> xsd:double  ] ] .

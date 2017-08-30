@@ -1,0 +1,15 @@
+Create View Template fcd As
+  Construct
+  {
+    ?s1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/FloatingCarData> .
+    ?s1 <http://example.org/timestamp> ?timestamp .
+    ?s1 <http://dbpedia.org/ontology/Planet/averageSpeed> ?speed .
+    ?s1 <http://www.w3.org/2003/01/geo/wgs84_pos#lat> ?lat .
+    ?s1 <http://www.w3.org/2003/01/geo/wgs84_pos#long> ?long .
+  } 
+  With
+    ?s1 = uri(concat("http://example.org/fcd", ?1))
+    ?timestamp = typedLiteral(?1, <http://www.w3.org/2001/XMLSchema#nonNegativeInteger>)
+    ?speed = typedLiteral(?4, <http://www.w3.org/2001/XMLSchema#double>)
+    ?lat = typedLiteral(?3, <http://www.w3.org/2001/XMLSchema#double>)
+    ?long = typedLiteral(?2, <http://www.w3.org/2001/XMLSchema#double>)
