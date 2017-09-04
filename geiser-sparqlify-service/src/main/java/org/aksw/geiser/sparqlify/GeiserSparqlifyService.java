@@ -38,7 +38,7 @@ public class GeiserSparqlifyService {
 	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
 	public void handleSparqlifyServiceRequest(SparqlifyServiceRequest request, @Payload Message message)
 			throws IOException, RecognitionException {
-		log.info("got {}", request);
+//		log.info("got {}", request);
 		String resultTurtle = processor.process(request);
 		Message result = MessageBuilder.withBody(resultTurtle.getBytes(StandardCharsets.UTF_8))
 				.setContentType("text/turtle;charset=utf-8").build();

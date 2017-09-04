@@ -83,7 +83,7 @@ public class SparqlifyRequestProcessor {
 		// writeTriples(System.out, trackingIt);
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		SparqlFormatterUtils.writeTurtle(outputStream, trackingIt);
-		CsvMapperCliMain.writeSummary(System.err, trackingIt.getState());
+//		CsvMapperCliMain.writeSummary(System.err, trackingIt.getState());
 
 		return outputStream.toString(Charsets.UTF_8.name());
 	}
@@ -104,7 +104,9 @@ public class SparqlifyRequestProcessor {
 		TemplateConfig templateConfig = CsvMapperCliMain.readTemplateConfig(IOUtils.toInputStream(request.config.data),
 				loggerCount);
 
-		log.info("Errors: " + loggerCount.getErrorCount() + ", Warnings: " + loggerCount.getWarningCount());
+		if (loggerCount.getWarningCount() > 0 || loggerCount.getErrorCount() > 0) {
+			log.info("Errors: " + loggerCount.getErrorCount() + ", Warnings: " + loggerCount.getWarningCount());
+		}
 
 		if (loggerCount.getErrorCount() > 0) {
 			throw new RuntimeException(
