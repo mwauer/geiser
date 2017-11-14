@@ -25,5 +25,11 @@ public class GeiserTranslateServiceConfiguration extends GeiserJsonServiceConfig
 		log.info("Configuring YandexTranslator as translator bean");
 		return new YandexTranslator();
 	}
+	
+	@Bean
+	public String[] resultPath(@Value("${translate_result_attribute:data/text}") String attributeToStoreResult) {
+		log.info("Splitting result attribute path {}", attributeToStoreResult);
+		return StringUtils.split(attributeToStoreResult, '/');
+	}
 
 }
