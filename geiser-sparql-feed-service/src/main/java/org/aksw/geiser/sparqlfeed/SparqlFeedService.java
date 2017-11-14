@@ -7,7 +7,10 @@ import java.util.ListIterator;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import java.io.ByteArrayOutputStream;
+
+import org.aksw.geiser.util.ServiceUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.query.GraphQuery;
 import org.eclipse.rdf4j.query.GraphQueryResult;
@@ -17,6 +20,7 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -39,10 +43,10 @@ public class SparqlFeedService {
 	private static final RDFFormat DEFAULT_FORMAT = RDFFormat.TURTLE;
 
 	@Value("${routing.key}")
-	private String routingKey;
+	private String defaultRoutingKey;
 
 	private TaskScheduler taskScheduler = new ConcurrentTaskScheduler();
-	
+
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
@@ -52,12 +56,16 @@ public class SparqlFeedService {
 	}
 
 	@RabbitListener(queues = "sparqlfeed")
-	public void handleSparqlFeedRequest(@Payload SparqlFeedRequest request) throws IOException {
+	public void handleSparqlFeedRequest(@Payload SparqlFeedRequest request, @Payload Message message) throws IOException {
 		log.info("SparqlFeed got message: {}", request);
 		List<String> preparedMessages = prepareMessages(request);
-//		ArrayList<String> preparedMessages = Lists.newArrayList("<urn:r1> <urn:p1> <urn:r2>.",
-//				"<urn:r1> <urn:p1> <urn:r3>.", "<urn:r1> <urn:p1> <urn:r4>.");
-		MessageProducerTask task = new MessageProducerTask(request, preparedMessages, rabbitTemplate);
+		String nextRoutingKey = ServiceUtils.nextRoutingKey(message);
+		if (StringUtils.isEmpty(nextRoutingKey)) {
+			log.info("Incoming message did not define a following routing key, using configured default {}", defaultRoutingKey);
+			nextRoutingKey = defaultRoutingKey;
+		}
+		MessageProducerTask task = new MessageProducerTask(request, preparedMessages,
+				nextRoutingKey, rabbitTemplate);
 		ScheduledFuture<?> future = taskScheduler.scheduleAtFixedRate(task, request.getMessageSendRate());
 		task.scheduledFuture = future;
 		log.info("SparqlFeed submitted message producer task for {}", request);
@@ -89,11 +97,13 @@ public class SparqlFeedService {
 
 	private class MessageProducerTask implements Runnable {
 
-		public MessageProducerTask(SparqlFeedRequest request, List<String> preparedMessages, RabbitTemplate rabbitTemplate) {
+		public MessageProducerTask(SparqlFeedRequest request, List<String> preparedMessages, String routingKey,
+				RabbitTemplate rabbitTemplate) {
 			super();
 			this.rabbitTemplate = rabbitTemplate;
 			this.request = request;
 			this.queue.addAll(preparedMessages);
+			this.routingKey = routingKey;
 		}
 
 		private volatile RabbitTemplate rabbitTemplate;
@@ -101,6 +111,8 @@ public class SparqlFeedService {
 		private final List<String> queue = Collections.synchronizedList(Lists.newArrayList());
 
 		private SparqlFeedRequest request;
+
+		private String routingKey;
 
 		private ScheduledFuture<?> scheduledFuture;
 
@@ -111,9 +123,10 @@ public class SparqlFeedService {
 					String nextMessage = it.next();
 					it.remove();
 					log.info("Sending message {}", nextMessage);
-					rabbitTemplate.send(routingKey, MessageBuilder.withBody(nextMessage.getBytes())
+					rabbitTemplate.send(this.routingKey, MessageBuilder.withBody(nextMessage.getBytes())
 							.setContentType(request.getRdfFormat()).build());
 				} else {
+					log.info("No more messages in queue for request {}.", request);
 					if (scheduledFuture != null) {
 						scheduledFuture.cancel(false);
 					}
