@@ -15,9 +15,9 @@ public class GeiserTranslateServiceConfiguration extends GeiserJsonServiceConfig
 	private static final Logger log = LoggerFactory.getLogger(GeiserTranslateServiceConfiguration.class);
 
 	@Bean
-	public String[] attributePath(@Value("${translate_input_attribute:data/text}") String attributeToTranslate) {
+	public String[] attributePath(@Value("${translate_input_attribute:data\\text}") String attributeToTranslate) {
 		log.info("Splitting attribute path {}", attributeToTranslate);
-		return StringUtils.split(attributeToTranslate, '/');
+		return StringUtils.split(attributeToTranslate, '\\');
 	}
 
 	@Bean
@@ -27,9 +27,9 @@ public class GeiserTranslateServiceConfiguration extends GeiserJsonServiceConfig
 	}
 	
 	@Bean
-	public String[] resultPath(@Value("${translate_result_attribute:data/text}") String attributeToStoreResult) {
+	public String[] resultPath(@Value("${translate_result_attribute:data\\text}") String attributeToStoreResult) {
 		log.info("Splitting result attribute path {}", attributeToStoreResult);
-		return StringUtils.split(attributeToStoreResult, '/');
+		return StringUtils.split(attributeToStoreResult, '\\');
 	}
 
 }
