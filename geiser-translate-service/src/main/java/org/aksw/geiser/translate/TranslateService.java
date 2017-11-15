@@ -74,6 +74,7 @@ public class TranslateService {
 		log.debug(" updated in json: {}", resultJsonString);
 		
 		// TODO might need to set replyto to nextRoutingKey if micropipe proxy handles it incorrect in consume.go
+		// TODO also contentType might not be correct, might also need to set content encoding field
 		Message resultMessage = MessageBuilder.withBody(resultJsonString.getBytes()).setContentType("application/json;charset=utf-8").build();
 		
 		String nextRoutingKey = ServiceUtils.nextRoutingKey(payload);
@@ -107,7 +108,7 @@ public class TranslateService {
 	/**
 	 * Creates empty JSON objects for the given {@link #resultPath} if necessary.
 	 * @param jsonObject the incoming JSON root object
-	 * @return the second-to-last element of the resultPath, e.g., the "data" object for a "data/translated" resultpath 
+	 * @return the second-to-last element of the resultPath, e.g., the "data" object for a "data\translated" resultpath 
 	 */
 	private JSONObject createResultPath(JSONObject jsonObject) {
 		int resultPathIndex = 0;
@@ -115,7 +116,7 @@ public class TranslateService {
 		while (resultPathIndex < resultPath.length-1) {
 			String nextResultPathElement = resultPath[resultPathIndex];
 			if (!resultElement.has(nextResultPathElement)) {
-				resultElement.append(nextResultPathElement, new JSONObject());
+				resultElement.put(nextResultPathElement, new JSONObject());
 			}
 			resultElement = resultElement.getJSONObject(nextResultPathElement);
 			resultPathIndex++;
@@ -124,16 +125,23 @@ public class TranslateService {
 	}
 
 	private TranslationResult translate(String input) {
-		Optional.of("de"); // sourceLanguage
-		return //new TranslationResult(input + " translated", sourceLanguage);
-		translator.translate(input, "EN");
+		Optional<String> sourceLanguage = Optional.of("de"); // sourceLanguage
+		return new TranslationResult(input + " translated", sourceLanguage);
+		//translator.translate(input, "EN");
 	}
 
 	private JSONObject getParentElement(JSONObject payload) throws JSONException {
 		JSONObject currentElement = payload;
 		for (int i = 0; i < attributePath.length-1; i++) {
 			String attributePathElement = attributePath[i];
-			currentElement = (JSONObject) currentElement.get(attributePathElement);
+			if ((i < attributePath.length) && attributePath[i+1].equals("[]")) {
+				// next element is array, pick its first field
+				i++;
+				currentElement = currentElement.getJSONArray(attributePathElement).getJSONObject(0);
+			}
+			else {
+				currentElement = currentElement.getJSONObject(attributePathElement);
+			}
 		}
 		return currentElement;
 	}
