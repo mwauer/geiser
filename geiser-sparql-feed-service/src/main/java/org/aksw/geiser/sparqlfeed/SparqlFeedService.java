@@ -20,9 +20,12 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.Rio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +58,7 @@ public class SparqlFeedService {
 		return new Queue("sparqlfeed", false, false, false);
 	}
 
-	@RabbitListener(queues = "sparqlfeed")
+	@RabbitListener(bindings = @QueueBinding(key = "sparqlfeed.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
 	public void handleSparqlFeedRequest(@Payload SparqlFeedRequest request, @Payload Message message) throws IOException {
 		log.info("SparqlFeed got message: {}", request);
 		List<String> preparedMessages = prepareMessages(request);
