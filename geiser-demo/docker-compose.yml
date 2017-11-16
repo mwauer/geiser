@@ -1,0 +1,61 @@
+# GEISER Demo docker-compose configuration for Milestone 2.
+# Receives tweets, translates and extracts named entities.
+# 
+# Prerequisites:
+# - docker-compose and docker installed
+# - a Yandex API key supplied in the geiser-translate environment
+#   (you can set the environment simulate=true to avoid this)
+#
+# Invocation:
+# - docker-compose up
+#
+# Monitoring and execution of the pipeline:
+# - via RabbitMQ management console at http://localhost:8081
+#   (default login guest/guest)
+# - initial request to sparql-feed-service: ./send-demo-request.py
+#   (access to external RDF store, change query in script to avoid)
+
+version: '2'
+services:
+
+  geiser-sparql-feed:
+    image: mwauer/geiser-sparql-feed-service
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+
+  geiser-translate:
+    image: mwauer/geiser-translate-service
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+    environment:
+      - translate_api_key=TO_BE_CONFIGURED
+      - translate_input_attribute=http://rdfs.org/sioc/ns#content\[]\@value
+
+  fox-proxy:
+    image: mwauer/fox-proxy
+    links:
+      - fox:fox
+      - rabbit:rabbit
+    environment:
+      - MICROPROXY_RABBIT_HOST=amqp://rabbit:5672/
+      - MICROPROXY_EXANGE=geiser
+      - FOX_URL=http://fox:4444/api
+    depends_on:
+      - rabbit
+    ports:
+      - 8080:8080
+
+  fox:
+    image: mwauer/fox:2.3.0
+    environment:
+      - LNG=en
+
+  rabbit:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 8081:15672
