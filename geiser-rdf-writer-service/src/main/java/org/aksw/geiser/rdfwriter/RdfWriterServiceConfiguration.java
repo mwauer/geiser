@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RdfWriterServiceConfiguration extends GeiserServiceConfiguration {
 	
-	@Value("${rdf.writer.store.path}")
+	@Value("${rdf_writer_store_path:/tmp}")
 	private String path;
 	
 	@Bean
