@@ -25,6 +25,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RdfWriterService {
+	
+	public static final String ROUTING_KEY = "rdfwriter-v1.#";
+	public static final String QUEUE_NAME = "rdfwriter-v1";
 
 	private static final Logger log = LoggerFactory.getLogger(RdfWriterService.class);
 
@@ -36,7 +39,7 @@ public class RdfWriterService {
 	@Value("${log_only:false}")
 	private boolean logOnly;
 
-	@RabbitListener(bindings = @QueueBinding(key = "rdfwriter.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = "rdfwriter")))
+	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 	public void handleRdfWriterMessage(
 			@Payload Message payload/* , @Headers Map<String, Object> headers */) {
 		log.info("RdfWriter got message: {}", payload);
