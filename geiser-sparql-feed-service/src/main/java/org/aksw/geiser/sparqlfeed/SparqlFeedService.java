@@ -41,6 +41,9 @@ import com.google.common.collect.Lists;
 @Component
 public class SparqlFeedService {
 
+	public static final String ROUTING_KEY = "sparqlfeed-v1.#";
+	public static final String QUEUE_NAME = "sparqlfeed-v1";
+
 	private static final Logger log = LoggerFactory.getLogger(SparqlFeedService.class);
 
 	private static final RDFFormat DEFAULT_FORMAT = RDFFormat.TURTLE;
@@ -58,17 +61,18 @@ public class SparqlFeedService {
 		return new Queue("sparqlfeed", false, false, true);
 	}
 
-	@RabbitListener(bindings = @QueueBinding(key = "sparqlfeed.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
-	public void handleSparqlFeedRequest(@Payload SparqlFeedRequest request, @Payload Message message) throws IOException {
+	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
+	public void handleSparqlFeedRequest(@Payload SparqlFeedRequest request, @Payload Message message)
+			throws IOException {
 		log.info("SparqlFeed got message: {}", request);
 		List<String> preparedMessages = prepareMessages(request);
 		String nextRoutingKey = ServiceUtils.nextRoutingKey(message);
 		if (StringUtils.isEmpty(nextRoutingKey)) {
-			log.info("Incoming message did not define a following routing key, using configured default {}", defaultRoutingKey);
+			log.info("Incoming message did not define a following routing key, using configured default {}",
+					defaultRoutingKey);
 			nextRoutingKey = defaultRoutingKey;
 		}
-		MessageProducerTask task = new MessageProducerTask(request, preparedMessages,
-				nextRoutingKey, rabbitTemplate);
+		MessageProducerTask task = new MessageProducerTask(request, preparedMessages, nextRoutingKey, rabbitTemplate);
 		ScheduledFuture<?> future = taskScheduler.scheduleAtFixedRate(task, request.getMessageSendRate());
 		task.scheduledFuture = future;
 		log.info("SparqlFeed submitted message producer task for {}", request);

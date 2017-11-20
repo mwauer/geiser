@@ -21,7 +21,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class GeiserSparqlifyService {
 
-	public static final String ROUTING_KEY = "sparqlify.#";
+	public static final String ROUTING_KEY = "sparqlify-v1.#";
+	public static final String QUEUE_NAME = "sparqlify-v1";
 
 	private static final Logger log = LoggerFactory.getLogger(GeiserSparqlifyService.class);
 
@@ -35,10 +36,10 @@ public class GeiserSparqlifyService {
 		this.processor = new SparqlifyRequestProcessor();
 	}
 
-	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
+	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 	public void handleSparqlifyServiceRequest(SparqlifyServiceRequest request, @Payload Message message)
 			throws IOException, RecognitionException {
-//		log.info("got {}", request);
+		log.info("got {}", request);
 		String resultTurtle = processor.process(request);
 		Message result = MessageBuilder.withBody(resultTurtle.getBytes(StandardCharsets.UTF_8))
 				.setContentType("text/turtle;charset=utf-8").build();

@@ -21,7 +21,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class GeiserLimesService {
 
-	public static final String ROUTING_KEY = "limes.#";
+	public static final String QUEUE_NAME = "limes-v1";
+	public static final String ROUTING_KEY = "limes-v1.#";
 
 	private static final Logger log = LoggerFactory.getLogger(GeiserLimesService.class);
 
@@ -43,7 +44,7 @@ public class GeiserLimesService {
 	 * @param message a LIMES xml configuration
 	 * @throws IOException
 	 */
-	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
+	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete="true", value=QUEUE_NAME)))
 	public void handleLimesServiceRequest(@Payload Message message) { // throws IOException {
 		log.info("got {}", message);
 		try {

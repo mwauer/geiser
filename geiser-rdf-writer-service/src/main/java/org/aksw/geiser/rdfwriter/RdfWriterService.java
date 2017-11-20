@@ -15,13 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -38,12 +36,7 @@ public class RdfWriterService {
 	@Value("${log_only:false}")
 	private boolean logOnly;
 
-	@Bean
-	public Queue rdfWriterQueue() {
-		return new Queue("rdfwriter", false, false, true);
-	}
-
-	@RabbitListener(bindings = @QueueBinding(key = "rdfwriter.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
+	@RabbitListener(bindings = @QueueBinding(key = "rdfwriter.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = "rdfwriter")))
 	public void handleRdfWriterMessage(
 			@Payload Message payload/* , @Headers Map<String, Object> headers */) {
 		log.info("RdfWriter got message: {}", payload);
