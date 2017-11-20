@@ -18,8 +18,8 @@ channel = connection.channel()
 properties = pika.BasicProperties(content_type='application/ld+json')
 
 channel.basic_publish(exchange='geiser',
-                      routing_key='sparqlfeed.translate.fox-v1.rdfwriter',
-                      body=('{"endpoint": "http://172.17.42.1:8890/sparql", "rdfFormat": "application/ld+json", '
+                      routing_key='sparqlfeed-v1.translate-v1.fox-v1.rdfwriter-v1',
+                      body=('{"endpoint": "http://db:8890/sparql", "rdfFormat": "application/ld+json", '
 			    '"query": "construct { ?s <http://rdfs.org/sioc/ns#content> ?o }'
 			    ' where { graph <urn:geiser-tweets> { ?s <http://rdfs.org/sioc/ns#content> ?o } } LIMIT 32"}'),
 		      properties=properties)

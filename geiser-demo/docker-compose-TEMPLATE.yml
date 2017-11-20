@@ -26,13 +26,13 @@ services:
 
   db:
     image: tenforce/virtuoso:1.3.1-virtuoso7.2.4
-  environment:
-    - SPARQL_UPDATE=true
-    - DEFAULT_GRAPH=urn:gdefault
-  volumes:
-    - ./db:/data
-  ports:
-    - "8890:8890"
+    environment:
+      - SPARQL_UPDATE=true
+      - DEFAULT_GRAPH=urn:gdefault
+    volumes:
+      - ./db:/data
+    ports:
+      - "8890:8890"
 
   geiser-sparql-feed:
     image: mwauer/geiser-sparql-feed-service
@@ -60,7 +60,7 @@ services:
       - rabbit:rabbit
     environment:
       - MICROPROXY_RABBIT_HOST=amqp://rabbit:5672/
-      - MICROPROXY_EXANGE=geiser
+      - MICROPROXY_EXCHANGE=geiser
       - FOX_URL=http://fox:4444/api
     depends_on:
       - rabbit
