@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ public class GeiserSparqlifyServiceBenchmarkingTest {
 	private Resource inputFcdHist3;
 
 	@Test
+	@Ignore
 	public void benchmarkFcdRealtime() throws IOException {
 		log.info("Generating {} messages for realtime FCD benchmark", BENCHMARK_MESSAGES);
 		String inputContent = IOUtils.toString(inputFcdRt.getInputStream());
@@ -65,6 +67,7 @@ public class GeiserSparqlifyServiceBenchmarkingTest {
 	}
 
 	@Test
+	@Ignore
 	public void benchmarkFcdHistoric() throws IOException {
 		log.info("Generating {} messages for historic FCD benchmark", BENCHMARK_MESSAGES);
 		String inputContent = IOUtils.toString(inputFcdHist1.getInputStream());

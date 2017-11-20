@@ -16,7 +16,7 @@ channel = connection.channel()
 properties = pika.BasicProperties(content_type='application/json')
 
 channel.basic_publish(exchange='',
-                      routing_key='sparqlfeed',
+                      routing_key='sparqlfeed-v1',
                       body='{"endpoint": "http://localhost:8890/sparql"}',
 		      properties=properties)
 print(" [x] Sent Sparql Feed Service reuqest message, check server log")

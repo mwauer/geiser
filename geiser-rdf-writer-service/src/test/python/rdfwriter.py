@@ -17,7 +17,7 @@ if not statements:
 	statements = '<urn:r1> <urn:p1> <urn:r2>.'
 
 channel.basic_publish(exchange='',
-                      routing_key='rdfwriter',
+                      routing_key='rdfwriter-v1',
                       body=statements,
 		      properties=properties)
 print(" [x] Sent simple RDF statement(s) as turtle")
