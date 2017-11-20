@@ -56,11 +56,6 @@ public class SparqlFeedService {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 
-	@Bean
-	private Queue sparqlFeedQueue() {
-		return new Queue("sparqlfeed", false, false, true);
-	}
-
 	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 	public void handleSparqlFeedRequest(@Payload SparqlFeedRequest request, @Payload Message message)
 			throws IOException {

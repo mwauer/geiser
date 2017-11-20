@@ -28,12 +28,6 @@ public class RdfWriterDebug {
 	@Autowired
 	private Repository repository;
 
-	@Bean
-	public Queue rdfWriterDebugQueue() {
-		log.info("Creating rdfwriterdebug queue");
-		return new Queue("rdfwriterdebug", false, false, false);
-	}
-
 	@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 	public void handleRdfWriterDebugMessage(
 			@Payload Message payload/* , @Headers Map<String, Object> headers */) {
