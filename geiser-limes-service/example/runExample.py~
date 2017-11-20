@@ -15,7 +15,7 @@ channel = connection.channel()
 channel.exchange_declare(exchange='geiser',
                          type='topic', durable=True, auto_delete=True)
 
-routing_key = 'limes-v1.test'
+routing_key = 'limes.test'
 #message = ' '.join(sys.argv[2:]) or 'Hello World!'
 # load LIMES config file into variable
 with open('restaurants.xml', 'r') as configfile:
