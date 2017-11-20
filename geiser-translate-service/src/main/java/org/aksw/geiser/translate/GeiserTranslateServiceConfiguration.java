@@ -17,7 +17,9 @@ public class GeiserTranslateServiceConfiguration extends GeiserJsonServiceConfig
 	@Bean
 	public String[] attributePath(@Value("${translate_input_attribute:data\\text}") String attributeToTranslate) {
 		log.info("Splitting attribute path {}", attributeToTranslate);
-		return StringUtils.split(attributeToTranslate, '\\');
+		String[] split = StringUtils.split(attributeToTranslate, '\\');
+		log.debug("Input attribute path: {}", (Object) split);
+		return split;
 	}
 
 	@Bean
@@ -29,7 +31,9 @@ public class GeiserTranslateServiceConfiguration extends GeiserJsonServiceConfig
 	@Bean
 	public String[] resultPath(@Value("${translate_result_attribute:data\\text}") String attributeToStoreResult) {
 		log.info("Splitting result attribute path {}", attributeToStoreResult);
-		return StringUtils.split(attributeToStoreResult, '\\');
+		String[] split = StringUtils.split(attributeToStoreResult, '\\');
+		log.debug("Result attribute path: {}", (Object) split); 
+		return split;
 	}
 
 }
