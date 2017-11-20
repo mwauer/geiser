@@ -35,12 +35,12 @@ public class RdfWriterService {
 	@Autowired
 	private Repository repository;
 
-	@Value("${log_only}:false")
+	@Value("${log_only:false}")
 	private boolean logOnly;
 
 	@Bean
 	public Queue rdfWriterQueue() {
-		return new Queue("rdfwriter", false, false, false);
+		return new Queue("rdfwriter", false, false, true);
 	}
 
 	@RabbitListener(bindings = @QueueBinding(key = "rdfwriter.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
