@@ -45,7 +45,7 @@ public class SparqlFeedService {
 
 	private static final RDFFormat DEFAULT_FORMAT = RDFFormat.TURTLE;
 
-	@Value("${routing.key}")
+	@Value("${routing_key:}")
 	private String defaultRoutingKey;
 
 	private TaskScheduler taskScheduler = new ConcurrentTaskScheduler();
@@ -55,7 +55,7 @@ public class SparqlFeedService {
 
 	@Bean
 	private Queue sparqlFeedQueue() {
-		return new Queue("sparqlfeed", false, false, false);
+		return new Queue("sparqlfeed", false, false, true);
 	}
 
 	@RabbitListener(bindings = @QueueBinding(key = "sparqlfeed.#", exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue))
@@ -125,8 +125,8 @@ public class SparqlFeedService {
 				if (it.hasNext()) {
 					String nextMessage = it.next();
 					it.remove();
-					log.info("Sending message {}", nextMessage);
-					rabbitTemplate.send(this.routingKey, MessageBuilder.withBody(nextMessage.getBytes())
+					log.info("Sending message to geiser.{}: {}", this.routingKey, nextMessage);
+					rabbitTemplate.send("geiser", this.routingKey, MessageBuilder.withBody(nextMessage.getBytes())
 							.setContentType(request.getRdfFormat()).build());
 				} else {
 					log.info("No more messages in queue for request {}.", request);
