@@ -1,5 +1,5 @@
 # geiser
-Public experiments for GEISER project development.
+Open source services and infrastructure development for the GEISER platform.
 
 # Related projects
 ## FOX service wrapper example of micropipe proxy
