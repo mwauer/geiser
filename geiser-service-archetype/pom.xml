@@ -4,7 +4,7 @@
 
   <groupId>org.aksw.geiser</groupId>
   <artifactId>geiser-service-archetype</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>maven-archetype</packaging>
 
   <name>geiser-service-archetype</name>
