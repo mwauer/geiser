@@ -1,0 +1,75 @@
+# GEISER Demo docker-compose configuration for Milestone 2.
+# Receives tweets, translates and extracts named entities.
+# 
+# Prerequisites:
+# - docker-compose and docker installed
+# - a Yandex API key supplied in the geiser-translate environment
+#   (you can set the environment simulate=true to avoid this)
+#
+# Invocation:
+# - docker-compose up
+#
+# Monitoring and execution of the pipeline:
+# - via RabbitMQ management console at http://localhost:8081
+#   (default login guest/guest)
+# - initial request to sparql-feed-service: ./send-demo-request.py
+#   (access to external RDF store, change query in script to avoid)
+
+version: '2'
+services:
+
+  rabbit:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 8081:15672
+
+  geiser-json-transformation:
+    image: mwauer/geiser-json-transformation-service
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+
+  rdfwriter:
+    image: mwauer/geiser-rdf-writer-service
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+      - metaphactory
+
+  metaphactory-data:
+    image: docker.metaphacts.com/release/platform-data:2.3.1
+
+  metaphactory:
+    image: docker.metaphacts.com/release/platform:2.3.1
+    restart: unless-stopped
+    environment:
+     - PLATFORM_OPTS=-Dconfig.environment.sparqlEndpoint=http://blazegraph:8080/blazegraph/sparql -Dlog4j.configurationFile=file:///var/lib/jetty/webapps/etc/log4j2-trace2.xml
+     - JAVA_OPTS=-Xmx1g
+    volumes_from:
+     - metaphactory-data
+    depends_on:
+     - metaphactory-data
+     - blazegraph
+    ports:
+     - 10214:8080
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  blazegraph:
+    image: docker.metaphacts.com/snapshot/blazegraph:2.2.0-20160908.003514-6
+    restart: unless-stopped
+    volumes:
+     - /blazegraph-data
+    environment:
+     - JAVA_OPTS=-Xmx1g
+    logging:
+     driver: json-file
+     options:
+      max-size: "200k"
+      max-file: "10"
