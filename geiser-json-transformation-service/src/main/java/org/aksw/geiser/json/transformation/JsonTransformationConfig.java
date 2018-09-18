@@ -33,4 +33,9 @@ public class JsonTransformationConfig extends GeiserServiceConfiguration {
 		return modelBuilder.build();
 	}
 	
+	@Bean
+	public JsonRdfTransformator transformator() {
+		return new JsonRdfTransformator();
+	}
+	
 }

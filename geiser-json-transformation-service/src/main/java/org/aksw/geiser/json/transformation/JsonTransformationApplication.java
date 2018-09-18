@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.aksw.geiser.util.ServiceUtils;
+import org.eclipse.rdf4j.model.Model;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -43,6 +44,12 @@ public class JsonTransformationApplication {
 		// mapping from jq filter to URI
 		@Value("${jqUriMapping}") private String jqUriMapping;
 		
+		@Autowired
+		private JsonRdfTransformator jsonRdfTransformator;
+		
+		@Autowired
+		private Model baseModel;
+		
 		/*
 		 * // use value annotations to get environment properties, e.g., set on
 		 * docker invocation
@@ -59,8 +66,10 @@ public class JsonTransformationApplication {
 										 */) {
 			System.out.println("Got test message: " + new String(message.getBody()));
 			
+			Model transformed = jsonRdfTransformator.transform(new String(message.getBody()), jqUriMapping, jqRdfMapping, baseModel);
+			
 			// for sending a response message to the next routing key:
-			Message result = MessageBuilder.withBody("result".getBytes(StandardCharsets.UTF_8))
+			Message result = MessageBuilder.withBody(transformed.toString().getBytes(StandardCharsets.UTF_8))
 					.setContentType("text/plain;charset=utf-8").build();
 			rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(),
 					ServiceUtils.nextRoutingKey(message), result);
