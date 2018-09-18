@@ -17,7 +17,7 @@ import com.arakelian.jq.JqResponse;
 /**
  * Transforms a JSON document into RDF.
  * 
- * @author wauer
+ * @author mwauer
  *
  */
 public class JsonRdfTransformator {
@@ -26,6 +26,34 @@ public class JsonRdfTransformator {
 
 	static ImmutableJqLibrary lib = ImmutableJqLibrary.of();
 
+	
+	public String transform(String json, String jqFilter, Model baseModel) {
+		
+		// apply jq transformation
+		JqRequest request = ImmutableJqRequest.builder() //
+				.lib(lib) //
+				.input(json) //
+				.filter(jqFilter) //
+				.build();
+
+		JqResponse response = request.execute();
+		if (response.hasErrors()) {
+			throw new IllegalArgumentException("Failed to apply jq filter " + jqFilter
+					+ " on JSON input: " + json + ". Errors from jq:" + errorListAsString(response));
+		}
+
+		return response.getOutput();
+	}
+	
+	/**
+	 * "old" approach using custom mappings
+	 * 
+	 * @param json
+	 * @param jqUriMapping
+	 * @param jqRdfMapping
+	 * @param baseModel
+	 * @return the transformed RDF model
+	 */
 	public Model transform(String json, String jqUriMapping, Map<String, String> jqRdfMapping, Model baseModel) {
 		ModelBuilder modelBuilder = new ModelBuilder(baseModel);
 

@@ -1,4 +1,4 @@
-. | map({
+{
   "@context": {
     "foaf": "http://xmlns.com/foaf/0.1/",
     "geoliteral": "http://www.bigdata.com/rdf/geospatial/literals/v1#",
@@ -21,4 +21,4 @@
   "dct:created": (.created_at),
   "dct:subject": (.entities?.hashtags? | map(.text)),
   "dct:creator": ("http://www.projekt-geiser.de/tweets/user/"+ (.user.id | tostring)),
-})
+}

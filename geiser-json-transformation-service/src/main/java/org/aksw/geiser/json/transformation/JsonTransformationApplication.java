@@ -1,10 +1,13 @@
 package org.aksw.geiser.json.transformation;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import org.aksw.geiser.util.ServiceUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.io.Resource;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +32,8 @@ import org.springframework.stereotype.Component;
 @SpringBootApplication
 public class JsonTransformationApplication {
 
+	private static final Logger log = LoggerFactory.getLogger(JsonTransformationApplication.class);
+
 	@Component
 	public class JsonTransformationService {
 
@@ -38,42 +44,50 @@ public class JsonTransformationApplication {
 		@Autowired
 		private RabbitTemplate rabbitTemplate;
 
-		// mapping from jq filter to RDF property
-		@Value("#{${jqRdfMapping}}")  private Map<String,String> jqRdfMapping;
-		
-		// mapping from jq filter to URI
-		@Value("${jqUriMapping}") private String jqUriMapping;
-		
+		@Value("${jq_file}")
+		private Resource jqFile;
+
+		@Value("${response_content_type:application/ld+json;charset=utf-8}")
+		private String contentType;
+
+		private String jqFilter;
+
 		@Autowired
 		private JsonRdfTransformator jsonRdfTransformator;
-		
+
 		@Autowired
 		private Model baseModel;
-		
-		/*
-		 * // use value annotations to get environment properties, e.g., set on
-		 * docker invocation
-		 * 
-		 * @Value("${example_property:default-value}") private String
-		 * exampleProperty;
-		 */
 
 		@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 		public void handleTestMessage(
 				@Payload Message message/*
 										 * , @Headers Map<String, Object>
 										 * headers
-										 */) {
-			System.out.println("Got test message: " + new String(message.getBody()));
-			
-			Model transformed = jsonRdfTransformator.transform(new String(message.getBody()), jqUriMapping, jqRdfMapping, baseModel);
-			
-			// for sending a response message to the next routing key:
+										 */) throws IOException {
+			// System.out.println("Got test message: " + new
+			// String(message.getBody()));
+
+			getJqFilter();
+			// old:
+			// Model transformed = jsonRdfTransformator.transform(new
+			// String(message.getBody()), jqUriMapping, jqRdfMapping,
+			// baseModel);
+			String transformed = jsonRdfTransformator.transform(new String(message.getBody()), jqFilter, baseModel);
+
+			// sending a response message to the next routing key:
 			Message result = MessageBuilder.withBody(transformed.toString().getBytes(StandardCharsets.UTF_8))
-					.setContentType("text/plain;charset=utf-8").build();
+					.setContentType(contentType).build();
 			rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(),
 					ServiceUtils.nextRoutingKey(message), result);
 
+		}
+
+		private void getJqFilter() throws IOException {
+			if (this.jqFilter == null) {
+				log.info("Setting up jqFilter from {}", jqFile);
+				jqFilter = IOUtils.toString(jqFile.getInputStream());
+				log.info("Set up jqFilter: {}", jqFilter);
+			}
 		}
 	}
 
