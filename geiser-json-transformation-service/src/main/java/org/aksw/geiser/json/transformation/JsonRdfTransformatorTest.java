@@ -1,12 +1,12 @@
 package org.aksw.geiser.json.transformation;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.util.Models;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -19,7 +19,6 @@ import com.arakelian.jq.ImmutableJqLibrary;
 import com.arakelian.jq.ImmutableJqRequest;
 import com.arakelian.jq.JqRequest;
 import com.arakelian.jq.JqResponse;
-import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 
 public class JsonRdfTransformatorTest {
@@ -59,6 +58,8 @@ public class JsonRdfTransformatorTest {
 		Assert.assertFalse(response.hasErrors());
 		Model m = Rio.parse(IOUtils.toInputStream(response.getOutput()),"",RDFFormat.JSONLD);
 		Assert.assertEquals(4, m.size());
+		
+		Assert.assertEquals("http://www.projekt-geiser.de/tweets/fest/10216944443837284000000000",Models.subject(m).get().stringValue());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
