@@ -24,24 +24,12 @@ services:
       - 5672:5672
       - 8081:15672
 
-  db:
-    image: tenforce/virtuoso:1.3.1-virtuoso7.2.4
-    environment:
-      - SPARQL_UPDATE=true
-      - DEFAULT_GRAPH=urn:gdefault
-    volumes:
-      - ./db:/data
-    ports:
-      - "8890:8890"
-
-  geiser-sparql-feed:
-    image: mwauer/geiser-sparql-feed-service
+  geiser-json-transformation:
+    image: mwauer/geiser-json-transformation-service
     links:
       - rabbit:rabbit
-      - db:db
     depends_on:
       - rabbit
-      - db
 
   geiser-translate:
     image: mwauer/geiser-translate-service
