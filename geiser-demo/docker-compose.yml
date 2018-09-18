@@ -79,3 +79,39 @@ services:
       - rabbit:rabbit
     depends_on:
       - rabbit
+      - metaphactory
+
+  metaphactory-data:
+    image: docker.metaphacts.com/release/platform-data:2.3.1
+
+  metaphactory:
+    image: docker.metaphacts.com/release/platform:2.3.1
+    restart: unless-stopped
+    environment:
+     - PLATFORM_OPTS=-Dconfig.environment.sparqlEndpoint=http://blazegraph:8080/blazegraph/sparql -Dlog4j.configurationFile=file:///var/lib/jetty/webapps/etc/log4j2-trace2.xml
+     - JAVA_OPTS=-Xmx1g
+    volumes_from:
+     - metaphactory-data
+    depends_on:
+     - metaphactory-data
+     - blazegraph
+    ports:
+     - 10214:8080
+    logging:
+      driver: json-file
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  blazegraph:
+    image: docker.metaphacts.com/snapshot/blazegraph:2.2.0-20160908.003514-6
+    restart: unless-stopped
+    volumes:
+     - /blazegraph-data
+    environment:
+     - JAVA_OPTS=-Xmx1g
+    logging:
+     driver: json-file
+     options:
+      max-size: "200k"
+      max-file: "10"

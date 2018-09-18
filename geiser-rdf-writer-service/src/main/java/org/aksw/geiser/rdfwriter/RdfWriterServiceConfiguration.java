@@ -1,29 +1,49 @@
 package org.aksw.geiser.rdfwriter;
 
-import java.io.File;
-
 import org.aksw.geiser.configuration.GeiserServiceConfiguration;
 import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
+import org.eclipse.rdf4j.repository.config.RepositoryConfig;
+import org.eclipse.rdf4j.repository.config.RepositoryFactory;
+import org.eclipse.rdf4j.repository.config.RepositoryRegistry;
+import org.eclipse.rdf4j.repository.sparql.SPARQLRepository;
+import org.eclipse.rdf4j.repository.sparql.config.SPARQLRepositoryConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RdfWriterServiceConfiguration extends GeiserServiceConfiguration {
+
+	@Value("${sparql-repository-query-url:http://metaphactory:10214/sparql}")
+	private String sparqlRepositoryQueryUrl;
+
+	@Value("${sparql-repository-update-url:http://metaphactory:10214/sparql}")
+	private String sparqlRepositoryUpdateUrl;
 	
-	@Value("${rdf_writer_store_path:/tmp}")
-	private String path;
+	@Value("${sparql-repository-basicauth-user:admin}")
+	private String sparqlRepositoryBasicAuthUser;
+
+	@Value("${sparql-repository-basicauth-pw:admin}")
+	private String sparqlRepositoryBasicAuthPw;
 	
 	@Bean
 	public Repository repository() {
-		File dataDir = new File(path);
-		MemoryStore memStore = new MemoryStore(dataDir);
-		memStore.setSyncDelay(1000L);
-		Repository repo = new SailRepository(memStore);
-		repo.initialize();
-		return repo;
+		RepositoryConfig repConfig = new RepositoryConfig("metaphactory","metaphactory HTTP SPARQL Repository");
+		// important to use this constructor, since there is a bug in the other constructors missing to init the type
+		SPARQLRepositoryConfig repImplConfig = new SPARQLRepositoryConfig();
+		repImplConfig.setQueryEndpointUrl(sparqlRepositoryQueryUrl);
+		repImplConfig.setUpdateEndpointUrl(sparqlRepositoryUpdateUrl);
+		repConfig.setRepositoryImplConfig(repImplConfig);
+		RepositoryFactory factory = RepositoryRegistry
+				.getInstance()
+				.get(repImplConfig.getType())
+				.orElseThrow(
+						() -> new RuntimeException("Unsupported repository type: "+ repImplConfig.getType()));
+		SPARQLRepository repository = (SPARQLRepository) factory.getRepository(repImplConfig);
+		repository.enableQuadMode(true);
+		repository.setUsernameAndPassword(sparqlRepositoryBasicAuthUser, sparqlRepositoryBasicAuthPw);
+		repository.initialize();
+		return repository;
 	}
 
 }
