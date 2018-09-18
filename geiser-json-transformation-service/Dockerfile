@@ -1,4 +1,4 @@
-FROM openjdk:8-jdk-alpine
+FROM anapsix/alpine-java:8
 VOLUME /tmp
 
 # copy spring boot fat jar into container
