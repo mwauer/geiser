@@ -50,7 +50,7 @@ services:
     depends_on:
       - rabbit
     environment:
-      - translate_api_key=TO_BE_CONFIGURED
+      - simulate=true
       - translate_input_attribute=http://rdfs.org/sioc/ns#content\[]\@value
 
   fox-proxy:
@@ -64,6 +64,7 @@ services:
       - FOX_URL=http://fox:4444/api
     depends_on:
       - rabbit
+      - fox
     ports:
       - 8080:8080
 

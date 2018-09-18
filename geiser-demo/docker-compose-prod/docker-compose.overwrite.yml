@@ -1,0 +1,15 @@
+version: '2'
+services:
+
+ rabbit:
+  ports:
+   - 15672:15672
+
+ #fox:
+  #environment:
+   #-JAVA_OPTS=-Xmx6G
+
+ geiser-translate:
+  environment:
+   - simulate=false
+   - translate_api_key=TO_BE_CONFIGURED   
