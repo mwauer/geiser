@@ -1,0 +1,24 @@
+. | map({
+  "@context": {
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "geoliteral": "http://www.bigdata.com/rdf/geospatial/literals/v1#",
+    "dct": "http://purl.org/dc/terms/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "sioc": "http://rdfs.org/sioc/ns#",
+    "wgs84": "http://www.w3.org/2003/01/geo/wgs84_pos#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dct:created": {
+        "@type": "xsd:dateTime"
+    },
+    "dct:creator": {
+        "@type": "@id"
+    }
+  },
+  "@id": ("http://www.projekt-geiser.de/tweets/fest/"+ (.id | tostring)),
+  "@type": "http://rdfs.org/sioc/ns#Post",
+  "sioc:content": .text,
+  "dct:created": (.created_at),
+  "dct:subject": (.entities?.hashtags? | map(.text)),
+  "dct:creator": ("http://www.projekt-geiser.de/tweets/user/"+ (.user.id | tostring)),
+})

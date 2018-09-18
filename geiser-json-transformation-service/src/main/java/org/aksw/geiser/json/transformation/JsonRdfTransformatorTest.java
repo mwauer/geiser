@@ -1,13 +1,25 @@
 package org.aksw.geiser.json.transformation;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.arakelian.jq.ImmutableJqLibrary;
+import com.arakelian.jq.ImmutableJqRequest;
+import com.arakelian.jq.JqRequest;
+import com.arakelian.jq.JqResponse;
+import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
 
 public class JsonRdfTransformatorTest {
@@ -28,6 +40,25 @@ public class JsonRdfTransformatorTest {
 		Model transformed = jrt.transform("{\"id\":\"123\",\"name\":\"Tester\",\"ref\":\"234\"}", "\"http://example.org/\"+.id", mapping,
 				baseModel);
 		System.out.println(transformed);
+	}
+	
+	@Test
+	public void readJqFromFileAndTransformToJsonLD() throws IOException{
+		 ImmutableJqLibrary lib = ImmutableJqLibrary.of();
+		
+		String jqString = IOUtils.toString(this.getClass().getResourceAsStream("/jq-jsonld.txt")); 
+		String jsonString = IOUtils.toString(this.getClass().getResourceAsStream("/test_tweets.json")); 
+		JqRequest request = ImmutableJqRequest.builder() //
+				.lib(lib) //
+				.input(jsonString) //
+				.filter(jqString) //
+				.build();
+
+		JqResponse response = request.execute();
+		
+		Assert.assertFalse(response.hasErrors());
+		Model m = Rio.parse(IOUtils.toInputStream(response.getOutput()),"",RDFFormat.JSONLD);
+		Assert.assertEquals(4, m.size());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
