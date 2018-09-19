@@ -39,7 +39,7 @@
 		<dependency>
 			<groupId>org.aksw.geiser</groupId>
 			<artifactId>geiser-service-core</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.rdf4j</groupId>
