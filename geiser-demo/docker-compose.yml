@@ -65,6 +65,7 @@ services:
     image: mwauer/geiser-rdf-writer-service
     links:
       - rabbit:rabbit
+      - metaphactory:metaphactory
     depends_on:
       - rabbit
       - metaphactory

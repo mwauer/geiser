@@ -33,8 +33,11 @@ services:
 
   rdfwriter:
     image: mwauer/geiser-rdf-writer-service
+    #environment:
+    #  - JAVA_OPTS=-Dsparql-repository-query-url=http://metaphactory:8080/sparql -Dsparql-repository-update-url=http://metaphactory:8080/sparql
     links:
       - rabbit:rabbit
+      - metaphactory:metaphactory
     depends_on:
       - rabbit
       - metaphactory

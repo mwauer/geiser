@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RdfWriterServiceConfiguration extends GeiserServiceConfiguration {
 
-	@Value("${sparql-repository-query-url:http://metaphactory:10214/sparql}")
+	@Value("${sparql-repository-query-url:http://metaphactory:8080/sparql}")
 	private String sparqlRepositoryQueryUrl;
 
-	@Value("${sparql-repository-update-url:http://metaphactory:10214/sparql}")
+	@Value("${sparql-repository-update-url:http://metaphactory:8080/sparql}")
 	private String sparqlRepositoryUpdateUrl;
 	
 	@Value("${sparql-repository-basicauth-user:admin}")
