@@ -8,11 +8,16 @@
     "sioc": "http://rdfs.org/sioc/ns#",
     "wgs84": "http://www.w3.org/2003/01/geo/wgs84_pos#",
     "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "geom": "http://geovocab.org/geometry#",
+    "spatial" : "http://geovocab.org/spatial#",
     "dct:created": {
-        "@type": "xsd:dateTime"
+      "@type": "xsd:dateTime"
     },
     "dct:creator": {
-        "@type": "@id"
+      "@type": "@id"
+    },
+    "dct:place": {
+      "@type": "@id"
     }
   },
   "@id": ("http://www.projekt-geiser.de/tweets/fest/"+ (.id | tostring)),
@@ -20,5 +25,22 @@
   "sioc:content": .text,
   "dct:created": (.created_at),
   "dct:subject": (.entities?.hashtags? | map(.text)),
-  "dct:creator": ("http://www.projekt-geiser.de/tweets/user/"+ (.user.id | tostring)),
+  "dct:creator": {
+    "@id":("http://www.projekt-geiser.de/tweets/user/"+ (.user.id | tostring)),
+    "@type":"foaf:Person",
+    "rdfs:label":(.user?.name)
+
+  },
+  "dct:place": {
+    "@type": "spatial:Feature",
+    "@id": ("http://www.projekt-geiser.de/tweets/location/"+ (.place?.id | tostring)),
+    "rdfs:label" : (.place?.full_name?),
+    "geom:geometry":{
+        "@type": "geom:Geometry" ,
+        "@id": ("http://www.projekt-geiser.de/tweets/location/"+ (.place?.id? | tostring)+"/geometry"),
+        "geoliteral:lat-lon": ((.coordinates?.coordinates?[0] |tostring)+"#"+(.coordinates?.coordinates?[1] |tostring)) ,
+        "wgs84:lat": (.coordinates?.coordinates?[1]) ,
+        "wgs84:long": (.coordinates?.coordinates?[0])
+    }
+  }
 }

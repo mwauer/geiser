@@ -78,5 +78,39 @@
       "url": "http://t.co/hdROHiFoSq",
       "utc_offset": null,
       "verified": false
+    },
+    "place": {
+      "attributes": {},
+      "bounding_box": {
+        "coordinates": [
+          [
+            [
+              8.277308,
+              48.940472
+            ],
+            [
+              8.541762,
+              48.940472
+            ],
+            [
+              8.541762,
+              49.091376
+            ],
+            [
+              8.277308,
+              49.091376
+            ]
+          ]
+        ],
+        "type": "Polygon"
+      },
+      "contained_within": [],
+      "country": "Germany",
+      "country_code": "DE",
+      "full_name": "Karlsruhe, Germany",
+      "id": "5b146bf0b819f1af",
+      "name": "Karlsruhe",
+      "place_type": "city",
+      "url": "https://api.twitter.com/1.1/geo/id/5b146bf0b819f1af.json"
     }
   }
