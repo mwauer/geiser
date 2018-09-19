@@ -8,9 +8,11 @@ import org.aksw.geiser.util.Message2Rdf4jModel;
 import org.aksw.geiser.util.ServiceUtils;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.ModelBuilder;
 import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,16 +30,15 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 /**
- * Basic GEISER service implementation generated from archetype.
+ * Generic NER GEISER service for annotating RDF.
  * 
  * @author wauer
  *
  */
 @SpringBootApplication
 public class GeiserNERApplication {
-	
-	private static final Logger log = LoggerFactory.getLogger(GeiserNERApplication.class);
 
+	private static final Logger log = LoggerFactory.getLogger(GeiserNERApplication.class);
 
 	@Autowired
 	private SimpleNERWrapper wrapper;
@@ -52,9 +53,17 @@ public class GeiserNERApplication {
 		@Autowired
 		private RabbitTemplate rabbitTemplate;
 
-		//
-		@Value("${example_property:default-value}")
-		private String exampleProperty;
+		// RDF type of the subject
+		@Value("${subject_type:http://rdfs.org/sioc/ns#Post}")
+		private String subjectType;
+		
+		// input property containing the text, can be comma separated
+		@Value("${text_properties:http://rdfs.org/sioc/ns#content}")
+		private String[] textProperties;
+		
+		// property for adding entity URI annotations
+		@Value("${annotation_property:http://rdfs.org/sioc/ns#topic_dbpedia}")
+		private String annotationProperty;
 
 		@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 		public void handleTestMessage(@Payload Message payload) throws IOException {
@@ -62,18 +71,37 @@ public class GeiserNERApplication {
 			
 			Model model = Message2Rdf4jModel.convertToModel(payload);
 
-			Optional<org.eclipse.rdf4j.model.Value> textObject = Models.object(model.filter(null, SimpleValueFactory.getInstance().createIRI("http://rdfs.org/sioc/ns#content"), null));
-			
-			List<IRI> entities = wrapper.getEntities(textObject.get().stringValue());
-			
-			ModelBuilder modelBuilder = new ModelBuilder(model);
-			//modelBuilder.subject(subject);
-			for (IRI entity : entities) {
-				log.debug("Adding NER entity: {}", entity);
-				modelBuilder.add(SimpleValueFactory.getInstance().createIRI("http://rdfs.org/sioc/ns#topic_dbpedia"), entity);				
+			StringBuilder inputStringBuilder = new StringBuilder();
+			for (String property : textProperties) {
+				Model filtered = model.filter(null, SimpleValueFactory.getInstance().createIRI(property), null);
+				for (org.eclipse.rdf4j.model.Value value : filtered.objects()) {
+					String literal = value.stringValue();
+					inputStringBuilder.append(literal);
+					inputStringBuilder.append(' ');					
+				}
 			}
 			
-			Message message = Message2Rdf4jModel.convertToMessage(model, RDFFormat.JSONLD);
+			Message message;
+			Model subjectModel = model.filter(null, RDF.TYPE, SimpleValueFactory.getInstance().createIRI(subjectType));
+			Optional<Resource> subject = Models.subject(subjectModel);
+			if (subject.isPresent()) {			
+				List<IRI> entities = wrapper.getEntities(inputStringBuilder.toString());
+				
+				ModelBuilder modelBuilder = new ModelBuilder(model);
+				modelBuilder.subject(subject.get());
+				//modelBuilder.subject(subject);
+				for (IRI entity : entities) {
+					log.debug("Adding NER entity: {}", entity);
+					modelBuilder.add(SimpleValueFactory.getInstance().createIRI(annotationProperty), entity);				
+				}
+				log.info("Added {} entities to {}", entities.size(), subject.get());
+				
+				message = Message2Rdf4jModel.convertToMessage(modelBuilder.build(), RDFFormat.JSONLD);
+			} else {
+				log.warn("Failed to identify subject: no statements for rdf:type {} in input: {}", subjectType, new String(payload.getBody()));
+				// re-send original input
+				message = payload;
+			}
 			
 			log.debug("Sending NER response: {}", new String(message.getBody()));
 

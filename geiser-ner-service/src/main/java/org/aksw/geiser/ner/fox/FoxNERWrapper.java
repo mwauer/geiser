@@ -13,17 +13,23 @@ import org.aksw.fox.data.Entity;
 import org.aksw.geiser.ner.SimpleNERWrapper;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FoxNERWrapper implements SimpleNERWrapper {
 
+	private static final Logger log = LoggerFactory.getLogger(FoxNERWrapper.class);
+
 	@Value("${fox_api_url:http://0.0.0.0:4444/fox}")
 	private String foxApiUrl;
 
 	@Override
 	public List<IRI> getEntities(String input) throws IOException {
+		log.info("Executing NER on {} for: {}", foxApiUrl, input);
+		
 		final IFoxApi fox = new FoxApi().setApiURL(new URL(foxApiUrl)).setTask(FoxParameter.TASK.NER)
 				.setOutputFormat(FoxParameter.OUTPUT.JSONLD).setLang(FoxParameter.LANG.DE).setInput(input)
 				// .setLightVersion(FoxParameter.FOXLIGHT.ENBalie)

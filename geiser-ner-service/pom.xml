@@ -61,6 +61,12 @@
 			<groupId>com.github.dice-group</groupId>
 			<artifactId>fox-java</artifactId>
 			<version>0.0.4-a54fc61715-1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.rdf4j</groupId>
