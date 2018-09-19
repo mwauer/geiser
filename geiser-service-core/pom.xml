@@ -6,6 +6,13 @@
 	<version>0.0.3-SNAPSHOT</version>
 	<name>GEISER Service Core Library</name>
 	<description>Core functionality and abstract implementation of a GEISER AMQP service</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
