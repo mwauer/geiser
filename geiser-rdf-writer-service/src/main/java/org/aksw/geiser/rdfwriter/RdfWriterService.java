@@ -55,7 +55,7 @@ public class RdfWriterService {
 		IRI namedGraphIri = vf.createIRI(headers.getOrDefault("graph_uri", BASE_URI));
 
 		try(RepositoryConnection con = repository.getConnection()){
-			con.add(Message2Rdf4jModel.convert(payload), namedGraphIri);
+			con.add(Message2Rdf4jModel.convertToModel(payload), namedGraphIri);
 		}catch(Exception e){
 			log.error("Failed to parse incoming payload or writing RDF statements to the repository.", e);
 		}
