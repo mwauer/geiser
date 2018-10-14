@@ -1,0 +1,65 @@
+.features | map({
+  "@context": {
+    "foaf": "http://xmlns.com/foaf/0.1/",
+    "geoliteral": "http://www.bigdata.com/rdf/geospatial/literals/v1#",
+    "dct": "http://purl.org/dc/terms/",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "sioc": "http://rdfs.org/sioc/ns#",
+    "wgs84": "http://www.w3.org/2003/01/geo/wgs84_pos#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "geom": "http://geovocab.org/geometry#",
+    "spatial" : "http://geovocab.org/spatial#",
+    "geiser" : "http://www.projekt-geiser.de/ontology/",
+    "geojson" : "http://www.projekt-geiser.de/ontology/geojson-property/",
+    "dct:created": {
+      "@type": "xsd:dateTime"
+    },
+    "dct:creator": {
+      "@type": "@id"
+    },
+    "dct:place": {
+      "@type": "@id"
+    }
+  },
+  "@id": ("http://www.projekt-geiser.de/dwd-event/"+ (.id | tostring)),
+  "@type": "geiser:WheatherEvent",
+  "rdfs:label": (.properties?.HEADLINE + " " + .properties?.PARAMETER_NAME),
+  "dct:created": (.properties?.SYSTEM_DATE),
+  "dct:subject": (.properties?.HEADLINE),
+  "dct:subject": (.properties?.PARAMETER_NAME),
+  "dct:creator": {
+    "@id":"http://www.projekt-geiser.de/agent/dwd",
+    "@type":"foaf:Organization",
+    "rdfs:label": (.properties?.CONTACT)
+  },
+  "dct:place": {
+    "@type": "spatial:Feature",
+    "@id": ("http://www.projekt-geiser.de/dwd-event/location/"+ (.id | tostring)),
+    "rdfs:label" : ("Whether Event Place: " + (.id | tostring)),
+    "geom:geometry":{
+        "@type": "geom:Geometry" ,
+        "@id": ("http://www.projekt-geiser.de/dwd-event/location/"+ (.id | tostring) +"/geometry"),
+        "geom:asWKT": (
+          ( select(.geometry.type=="Polygon") | .geometry.coordinates | map(. | 
+              
+                map((.[0] |tostring) +" "+ (.[1] |tostring)) | "("+join(",")+")"
+                
+            ) | "POLYGON("+join(", ")+")" 
+          ) 
+          // #can be polygon or multipolygons. multipolygons have additional nestings
+          ( select(.geometry.type=="MultiPolygon") | .geometry.coordinates | map(. | 
+            map( . |  
+                  map((.[0] |tostring) +" "+ (.[1] |tostring)) | "("+join(",")+")"
+                  
+              ) | "("+join(",")+")"
+            ) | "MULTIPOLYGON("+join(", ")+")"
+          )
+        ) 
+    }
+  }
+}
++
+(.properties | with_entries(select(.value | type |.=="string") | .key |= "geojson:" + (. | ascii_downcase))
+  )
+)
