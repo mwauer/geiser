@@ -1,0 +1,45 @@
+<h1>Geiser BUS</h1>
+<hr>
+
+<bs-row>
+  <bs-col sm="8">
+    <iframe src="/assets/first_stomp.html" style="border:0; position:fixed;  width:60%; height:100%" frameBorder=0></iframe>
+  </bs-col>
+  <bs-col sm="4">
+     <mp-event-target-refresh id='some-element' refresh-interval=5>
+     <div>
+      Number of annotations: <semantic-query query='SELECT (count(*) as ?cnt) WHERE{GRAPH ?g{?s <http://purl.org/dc/terms/dbpedia-subject> ?o}}'></semantic-query> 
+      <semantic-table query='SELECT DISTINCT ?s ?o WHERE{GRAPH ?g{?s <http://purl.org/dc/terms/dbpedia-subject> ?o}}'></semantic-table> 
+     </div>
+    </mp-event-target-refresh>
+    
+  </bs-col>
+  
+</bs-row> 
+
+<bs-row>
+  <bs-col sm="8">
+
+  </bs-col>
+  <bs-col sm="4">
+        <semantic-map
+          
+          query='
+            SELECT ?wkt (?event as ?link) ?description ?color WHERE {
+              ?event <http://purl.org/dc/terms/place> ?place.
+              ?geometry <http://geovocab.org/geometry#asWKT> ?wkt.
+              ?place <http://geovocab.org/geometry#geometry> ?geometry.
+              ?event rdfs:label ?description.
+              ?event <http://www.projekt-geiser.de/ontology/geojson-property/ec_area_color> ?ec_area_color.
+              BIND(CONCAT("rgba(",REPLACE(?ec_area_color," ",","),",0.3)") as ?color)
+              FILTER NOT EXISTS{?event <http://purl.org/dc/terms/subject> "Ambrosia"}
+            }
+          '
+          tuple-template='<b>{{description.value}}</b><br>
+                          <semantic-link iri="{{link.value}}" target="_blank"></semantic-link>
+                          <semantic-table query="SELECT * WHERE{ <{{link.value}}> ?p ?o}"></semantic-query>'
+></semantic-map>
+  </bs-col>
+  
+</bs-row> 
+

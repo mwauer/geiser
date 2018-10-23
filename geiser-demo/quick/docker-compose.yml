@@ -19,10 +19,13 @@ version: '2'
 services:
 
   rabbit:
-    image: rabbitmq:management
+    image: byteflair/rabbitmq-stomp
     ports:
       - 5672:5672
       - 8081:15672
+      - 15671:15671
+      - 15674:15674
+      - 61613:61613
 
   geiser-json-transformation:
     image: mwauer/geiser-json-transformation-service
@@ -44,15 +47,29 @@ services:
       - metaphactory
       - blazegraph
 
+  sparql:
+    image: mwauer/geiser-sparql-service
+    environment:
+      - JAVA_OPTS=-Dsparql-repository-query-url=http://blazegraph:8080/blazegraph/sparql -Dsparql-repository-update-url=http://blazegraph:8080/blazegraph/sparql
+    links:
+      - rabbit:rabbit
+      - metaphactory:metaphactory
+    depends_on:
+      - rabbit
+      - metaphactory
+      - blazegraph
+
   metaphactory-data:
-    image: docker.metaphacts.com/release/platform-data:2.3.1
+    image: docker.metaphacts.com/snapshot/platform-data:2.4.0-RC2
 
   metaphactory:
-    image: docker.metaphacts.com/release/platform:2.3.1
+    image: docker.metaphacts.com/snapshot/platform:2.4.0-RC2
     restart: unless-stopped
     environment:
      - PLATFORM_OPTS=-Dconfig.environment.sparqlEndpoint=http://blazegraph:8080/blazegraph/sparql -Dlog4j.configurationFile=file:///var/lib/jetty/webapps/etc/log4j2.xml
      - JAVA_OPTS=-Xmx2g
+    volumes:
+     - ../metaphactory-blazegraph-config/geiser:/apps/geiser:rw
     volumes_from:
      - metaphactory-data
     depends_on:
@@ -71,6 +88,7 @@ services:
     restart: unless-stopped
     volumes:
      - /blazegraph-data
+     - ../metaphactory-blazegraph-config/RWStore.properties:/config/RWStore.properties:rw
     environment:
      - JAVA_OPTS=-Xmx2g
     logging:

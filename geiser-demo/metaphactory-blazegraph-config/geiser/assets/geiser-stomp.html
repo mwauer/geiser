@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.5/sockjs.js"></script>
+    <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="http://rdf-ext.bergnet.org/dist/rdf-ext-all-1.0.0.src.js"></script>
+    <script src="https://unpkg.com/jsonld@1.0.0/dist/jsonld.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="./triples2d3.js"></script>
+    <style type="text/css">
+        .node {
+          stroke: #fff;
+          fill:#ddd;
+          stroke-width: 1.5px;
+        }
+
+        .link {
+          fill: none;
+          stroke: #999;
+          stroke-opacity: .6;
+        }
+
+        marker {
+            stroke: #999;
+            fill:rgba(124,240,10,0);
+        }
+
+        .node-text {
+          font: 11px sans-serif;
+          fill:black;
+        }
+
+        .link-text {
+          font: 9px sans-serif;
+          fill:grey;
+        }
+        
+        svg{
+            border:1px solid black;
+        }
+    </style>
+    <script>
+        // Stomp.js boilerplate
+        var ws = new SockJS('http://' + window.location.hostname + ':15674/stomp');
+        var client = Stomp.over(ws);
+
+        // SockJS does not support heart-beat: disable heart-beats
+        client.heartbeat.outgoing = 0;
+        client.heartbeat.incoming = 0;
+
+        client.debug = function() {
+            if (window.console && console.log && console.log.apply) {
+                console.log.apply(console, arguments);
+            }
+        };
+
+        send = function(data) {
+            client.send('/exchange/intranet.system.inline/meow', {}, data);
+        };
+        const triples = [];
+        var graph = null;
+        var on_connect = function(x) {
+
+            id = client.subscribe('/exchange/geiser/sparqlresult', function(d) {
+                console.log(id);
+                //var p = JSON.parse(d.body);
+                //console.log(p);
+                // create JSON-LD parser instance
+                  const parser = new JsonLdParser({factory: rdf})
+                  // forward the JSON-LD example string to the parser
+                  const quadStream = parser.import(stringToStream(d.body))
+                  // create a new dataset and import the quad stream into it (reverse pipe) with Promise API
+                  rdf.dataset().import(quadStream).then((dataset) => {
+                    // loop over all quads an write them to the console
+                    dataset.forEach((quad) => {
+                      console.log(quad.toString())
+                      triples.push(
+                        {subject: quad.subject.value,     predicate: quad.predicate.value,     object: quad.object.value}
+                      );
+                        graph = triplesToGraph(triples);
+                            
+                        update();
+                    })
+                  })
+                //jsonld.toRDF(p, {format: 'application/n-quads'}, function(err, nquads) {
+                  //console.log(nquads);
+                  //$('#output').append(document.createTextNode(nquads));
+                //});
+                
+            });
+        };
+        var on_error = function() {
+            console.log('error');
+        };
+        client.connect('guest', 'guest', on_connect, on_error, '/');
+        console.log(client);
+
+    </script>
+
+
+</head>
+<body>
+
+<!--<a onclick="send(new Date().getTime())"></a>
+<textarea rows="4" cols="50" id="output">
+
+</textarea> -->
+<div id="svg-body" class="panel-body"></div>
+    <script>
+         width = window.innerWidth-200, height = window.innerHeight-200;
+
+    var svg = d3.select("#svg-body").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                ;
+                
+    var force = d3.layout.force().size([width, height]);
+    </script>
+</body>
+</html>
