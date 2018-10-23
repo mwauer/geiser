@@ -56,7 +56,7 @@ public class JsonRdfTransformatorTest {
 		
 		Assert.assertFalse(response.hasErrors());
 		Model m = Rio.parse(IOUtils.toInputStream(response.getOutput()),"",RDFFormat.JSONLD);
-		Assert.assertEquals(8, m.size());
+		Assert.assertEquals(12, m.size());
 		
 		Assert.assertEquals("http://www.projekt-geiser.de/tweets/fest/10216944443837284000000000",Models.subject(m).get().stringValue());
 	}

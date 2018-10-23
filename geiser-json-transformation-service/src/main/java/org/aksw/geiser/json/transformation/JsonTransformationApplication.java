@@ -1,16 +1,21 @@
 package org.aksw.geiser.json.transformation;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.aksw.geiser.util.ServiceUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.rdf4j.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.MessageBuilderSupport;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -20,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.io.Resource;
+import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +50,6 @@ public class JsonTransformationApplication {
 		@Autowired
 		private RabbitTemplate rabbitTemplate;
 
-		@Value("${jq_file}")
 		private Resource jqFile;
 
 		@Value("${response_content_type:application/ld+json;charset=utf-8}")
@@ -60,32 +65,35 @@ public class JsonTransformationApplication {
 
 		@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 		public void handleTestMessage(
-				@Payload Message message/*
-										 * , @Headers Map<String, Object>
-										 * headers
-										 */) throws IOException {
-			// System.out.println("Got test message: " + new
-			// String(message.getBody()));
+				@Payload Message message, @Headers Map<String, String> headers) throws IOException {
 
-			getJqFilter();
-			// old:
-			// Model transformed = jsonRdfTransformator.transform(new
-			// String(message.getBody()), jqUriMapping, jqRdfMapping,
-			// baseModel);
+			if(!headers.containsKey("jqFile")){
+				throw new IOException("jqFile declaration missing in header request header.");
+			}
+			
+			URL jqResource = JsonTransformationService.class.getClassLoader().getResource(headers.get("jqFile"));
+			getJqFilter(jqResource);
+
 			String transformed = jsonRdfTransformator.transform(new String(message.getBody()), jqFilter, baseModel);
 
 			// sending a response message to the next routing key:
-			Message result = MessageBuilder.withBody(transformed.toString().getBytes(StandardCharsets.UTF_8))
-					.setContentType(contentType).build();
+			MessageBuilderSupport<Message> messageBuilder = MessageBuilder.withBody(transformed.toString().getBytes(StandardCharsets.UTF_8))
+					.setContentType(contentType);
+			
+			//forward initial headers
+			for( Entry<String, Object> h : message.getMessageProperties().getHeaders().entrySet()){
+				messageBuilder.setHeaderIfAbsent(h.getKey(), h.getValue());
+			}
+			Message newMessage = messageBuilder.build();
 			rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(),
-					ServiceUtils.nextRoutingKey(message), result);
+					ServiceUtils.nextRoutingKey(message), newMessage);
 
 		}
 
-		private void getJqFilter() throws IOException {
+		private void getJqFilter(URL jqResource) throws IOException {
 			if (this.jqFilter == null) {
 				log.info("Setting up jqFilter from {}", jqFile);
-				jqFilter = IOUtils.toString(jqFile.getInputStream());
+				jqFilter = IOUtils.toString(jqResource.openStream());
 				log.info("Set up jqFilter: {}", jqFilter);
 			}
 		}

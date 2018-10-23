@@ -1,4 +1,4 @@
-.features | map({
+{
   "@context": {
     "foaf": "http://xmlns.com/foaf/0.1/",
     "geoliteral": "http://www.bigdata.com/rdf/geospatial/literals/v1#",
@@ -62,4 +62,3 @@
 +
 (.properties | with_entries(select(.value | type |.=="string") | .key |= "geojson:" + (. | ascii_downcase))
   )
-)
