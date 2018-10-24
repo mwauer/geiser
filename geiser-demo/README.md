@@ -36,7 +36,34 @@ python send-json-transformation-request.py -l 1000 \
 --routingKey jsontransformation-v1.rdfwriter-v1.#
 ```
 
-##Query Example
+##Query Examples
+
+###Simple Query
 ```
 python sparql-direct-exchange-example.py 'SELECT * WHERE {?a ?b ?c} LIMIT 10'
 ```
+
+###Query with geo-search service
+The following query returns the top concepts/keywords of tweets in a 10km circular distance around `48.99905508#8.37371461`:
+
+```
+python sparql-direct-exchange-example.py '
+PREFIX geoliteral: <http://www.bigdata.com/rdf/geospatial/literals/v1#>
+PREFIX geo: <http://www.bigdata.com/rdf/geospatial#>
+PREFIX sioc: <http://rdfs.org/sioc/ns#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?subject  (count(DISTINCT ?tweet) as ?number) WHERE {
+  ?tweet a sioc:Post.
+  ?tweet dcterms:place/<http://geovocab.org/geometry#geometry> ?geometry.
+  ?tweet dcterms:subject ?subject.
+  SERVICE geo:search {
+    ?geometry geo:search "inCircle" ;
+    	geo:searchDatatype geoliteral:lat-lon ;
+    	geo:predicate <http://www.w3.org/2003/01/geo/wgs84_pos#lat-lon> ;
+    	geo:spatialCircleCenter "48.99905508#8.37371461" ;
+    	geo:spatialCircleRadius "10" . # default unit: Kilometers
+  }
+}GROUP BY ?subject
+'
+```
+

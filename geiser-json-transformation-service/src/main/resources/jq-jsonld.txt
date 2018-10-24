@@ -18,6 +18,9 @@
     },
     "dct:place": {
       "@type": "@id"
+    },
+    "wgs84:lat-lon": {
+      "@type": "geoliteral:lat-lon"
     }
   },
   "@id": ("http://www.projekt-geiser.de/tweets/fest/"+ (.id | tostring)),
@@ -38,7 +41,7 @@
     "geom:geometry":{
         "@type": "geom:Geometry" ,
         "@id": ("http://www.projekt-geiser.de/tweets/location/"+ (.place?.id? | tostring)+"/geometry"),
-        "geoliteral:lat-lon": ((.coordinates?.coordinates?[0] |tostring)+"#"+(.coordinates?.coordinates?[1] |tostring)) ,
+        "wgs84:lat-lon": ((.coordinates?.coordinates?[1] |tostring)+"#"+(.coordinates?.coordinates?[0] |tostring)) ,
         "wgs84:lat": (.coordinates?.coordinates?[1]) ,
         "wgs84:long": (.coordinates?.coordinates?[0])
     }
