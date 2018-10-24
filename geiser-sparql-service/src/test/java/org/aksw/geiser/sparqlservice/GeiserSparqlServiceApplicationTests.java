@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-//@Ignore
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { GeiserSparqlServiceApplication.class, GeiserSparqlServiceApplication.GeiserSparqlSelectService.class, GeiserSparqlServiceApplicationTests.TestConfiguration.class})
 public class GeiserSparqlServiceApplicationTests {
