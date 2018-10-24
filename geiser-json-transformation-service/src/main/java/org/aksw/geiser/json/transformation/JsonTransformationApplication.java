@@ -5,6 +5,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.aksw.geiser.util.ServiceUtils;
 import org.apache.commons.io.IOUtils;
@@ -29,6 +31,10 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 /**
  * Basic GEISER service implementation generated from archetype.
  * 
@@ -50,12 +56,23 @@ public class JsonTransformationApplication {
 		@Autowired
 		private RabbitTemplate rabbitTemplate;
 
-		private Resource jqFile;
 
 		@Value("${response_content_type:application/ld+json;charset=utf-8}")
 		private String contentType;
 
-		private String jqFilter;
+		LoadingCache<URL, String> jqFilterCache = CacheBuilder.newBuilder()
+			       .maximumSize(1000)
+			       .expireAfterWrite(10, TimeUnit.MINUTES)
+			       .build(
+			           new CacheLoader<URL, String>() {
+						@Override
+						public String load(URL jqResource) throws Exception {
+							log.info("Setting up jqFilter from {}", jqResource);
+							String jqFilter = IOUtils.toString(jqResource.openStream());
+							log.info("Set up jqFilter: {}", jqFilter);
+							return jqFilter;
+						}
+			           });
 
 		@Autowired
 		private JsonRdfTransformator jsonRdfTransformator;
@@ -65,15 +82,14 @@ public class JsonTransformationApplication {
 
 		@RabbitListener(bindings = @QueueBinding(key = ROUTING_KEY, exchange = @Exchange(type = ExchangeTypes.TOPIC, value = "geiser", durable = "true", autoDelete = "true"), value = @org.springframework.amqp.rabbit.annotation.Queue(autoDelete = "true", value = QUEUE_NAME)))
 		public void handleTestMessage(
-				@Payload Message message, @Headers Map<String, String> headers) throws IOException {
+				@Payload Message message, @Headers Map<String, String> headers) throws IOException, ExecutionException {
 
 			if(!headers.containsKey("jqFile")){
 				throw new IOException("jqFile declaration missing in header request header.");
 			}
 			
 			URL jqResource = JsonTransformationService.class.getClassLoader().getResource(headers.get("jqFile"));
-			getJqFilter(jqResource);
-
+			String jqFilter = jqFilterCache.get(jqResource);
 			String transformed = jsonRdfTransformator.transform(new String(message.getBody()), jqFilter, baseModel);
 
 			// sending a response message to the next routing key:
@@ -90,13 +106,7 @@ public class JsonTransformationApplication {
 
 		}
 
-		private void getJqFilter(URL jqResource) throws IOException {
-			if (this.jqFilter == null) {
-				log.info("Setting up jqFilter from {}", jqFile);
-				jqFilter = IOUtils.toString(jqResource.openStream());
-				log.info("Set up jqFilter: {}", jqFilter);
-			}
-		}
+
 	}
 
 	public static void main(String[] args) {

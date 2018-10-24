@@ -21,7 +21,7 @@ Send individual messages (one dwd whether event/message) to the JSON2RDF transfo
 
 ```
 python send-json-transformation-request.py -l 1000 \
---jsonFile dwd-all-line-based.json.gz --jqFile dwd-json-jsonld.txt \
+--jsonFile dwd-das-fest-all-line-based.json.gz --jqFile dwd-json-jsonld.txt \
 --targetGraph https://www.projekt-geiser.de/dwd-events \
 --routingKey jsontransformation-v1.rdfwriter-v1.#
 ```
@@ -31,7 +31,7 @@ Send individual messages (one tweet object/message) to the JSON2RDF transformati
 
 ```
 python send-json-transformation-request.py -l 1000 \
---jsonFile all-separate.json.gz --jqFile jq-jsonld.txt \
+--jsonFile tweets-das-fest-all-line-based.json.gz --jqFile jq-jsonld.txt \
 --targetGraph https://www.projekt-geiser.de/tweets \
 --routingKey jsontransformation-v1.rdfwriter-v1.#
 ```
