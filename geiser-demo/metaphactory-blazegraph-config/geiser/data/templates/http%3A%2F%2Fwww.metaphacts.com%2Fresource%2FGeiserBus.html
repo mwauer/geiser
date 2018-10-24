@@ -3,15 +3,15 @@
 
 <bs-row>
   <bs-col sm="8">
-    <iframe src="/assets/first_stomp.html" style="border:0; position:fixed;  width:60%; height:100%" frameBorder=0></iframe>
+    <iframe src="/assets/geiser-stomp.html" style="border:0; position:fixed;  width:60%; height:100%" frameBorder=0></iframe>
   </bs-col>
   <bs-col sm="4">
-     <mp-event-target-refresh id='some-element' refresh-interval=5>
+     [[!--<mp-event-target-refresh id='some-element' refresh-interval=5>--]]
      <div>
       Number of annotations: <semantic-query query='SELECT (count(*) as ?cnt) WHERE{GRAPH ?g{?s <http://purl.org/dc/terms/dbpedia-subject> ?o}}'></semantic-query> 
       <semantic-table query='SELECT DISTINCT ?s ?o WHERE{GRAPH ?g{?s <http://purl.org/dc/terms/dbpedia-subject> ?o}}'></semantic-table> 
      </div>
-    </mp-event-target-refresh>
+    [[!--</mp-event-target-refresh>--]]
     
   </bs-col>
   
