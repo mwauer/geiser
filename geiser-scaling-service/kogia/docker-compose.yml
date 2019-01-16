@@ -1,0 +1,38 @@
+# GEISER Demo scaling with kogia.
+# 
+# Prerequisites:
+# - docker-compose and docker installed
+#
+# Invocation:
+# - docker-compose up
+#
+# Monitoring and execution of the pipeline:
+# - via RabbitMQ management console at http://localhost:8081
+#   (default login guest/guest)
+# - initial request to sparql-feed-service: ./send-demo-request.py
+#   (access to external RDF store, change query in script to avoid)
+
+version: '2'
+services:
+
+  rabbit:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 8081:15672
+
+  geiser-delay:
+    image: mwauer/geiser-delay-service
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
+    environment:
+      - delay=2000
+
+  kogia:
+    image: mwauer/kogia
+    links:
+      - rabbit:rabbit
+    depends_on:
+      - rabbit
