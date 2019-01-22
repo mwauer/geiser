@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Test script for sending all 6199 USU tweets to transformation service.
+# Test script for sending sample messages to geiser-delay-service.
 # Assumes that you have a "test" routing key for receiving the
 # results.
 #
