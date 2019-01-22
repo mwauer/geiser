@@ -6,6 +6,7 @@
 #
 import pika
 import gzip
+import time
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
                '127.0.0.1'))
@@ -13,7 +14,7 @@ channel = connection.channel()
 
 properties = pika.BasicProperties(content_type='application/json')
 
-print("Sending JSON message...")
+print("Sending JSON messages...")
 
 with gzip.open('many-test.json.gz', 'rb') as f:
   for line in f:
@@ -21,6 +22,7 @@ with gzip.open('many-test.json.gz', 'rb') as f:
                           routing_key='delay-v1.test',
                           body=line,
 	                  properties=properties)
+    time.sleep(0.1)
 
-print(" [x] Sent JSON message to Service request message")
+print(" [x] Sent JSON messages to Delay Service")
 connection.close()
