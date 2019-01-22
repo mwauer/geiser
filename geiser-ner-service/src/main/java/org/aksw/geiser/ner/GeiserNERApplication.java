@@ -83,6 +83,7 @@ public class GeiserNERApplication {
 			
 			Message message;
 			Model subjectModel = model.filter(null, RDF.TYPE, SimpleValueFactory.getInstance().createIRI(subjectType));
+			// TODO: currently only supports a single resource in the given model.
 			Optional<Resource> subject = Models.subject(subjectModel);
 			if (subject.isPresent()) {			
 				List<IRI> entities = wrapper.getEntities(inputStringBuilder.toString());
