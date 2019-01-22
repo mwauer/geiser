@@ -1,0 +1,16 @@
+connection:
+  amqp: amqp://localhost
+  docker: unix:///run/docker.sock
+defaults:
+  sample_rate: 2s
+  scale_rate: 4s
+  upscale_delay: 8s
+  downscale_delay: 16s
+  coverage: .75
+services:
+  - service: geiser-delay-service
+    metrics: 
+    - delay-v1
+    threshold: 5
+    min_replicas: 1
+    max_replicas: 20

@@ -1,3 +1,8 @@
 # create a rabbitMQ service, so we can access it from within swarm
-docker service create --name=rabbitservice -p 8081:15672 -p 5672:5672 rabbitmq:management
+# docker service create --name=rabbitservice -p 8081:15672 -p 5672:5672 rabbitmq:management
 
+# create a geiser-delay-service, so we can control it with kogia
+docker service create --name=geiser-delay-service --network=host -e "amqp_server_host=localhost" -e "delay=2000" mwauer/geiser-delay-service
+
+# run kogia with basic configuration for geiser-delay-service
+docker run --volume=$(pwd)/local/kogia.yml:/kogia.yml -v /var/run/docker.sock:/run/docker.sock --network=host mwauer/kogia
