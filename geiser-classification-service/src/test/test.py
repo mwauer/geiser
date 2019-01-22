@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 #
-# Test script for sending a sample turtle message to classification service.
+# Test script for sending all test tweets to classification service.
 # Assumes that you have a "test" routing key for receiving the
-# results and classification service running.
+# results.
 #
 import pika
 import gzip
+import time
 
 connection = pika.BlockingConnection(pika.ConnectionParameters(
                '127.0.0.1'))
@@ -13,14 +14,35 @@ channel = connection.channel()
 
 properties = pika.BasicProperties(content_type='text/turtle')
 
-print("Sending Turtle message...")
+print("Sending Turtle messages...")
 
-message = '<urn:r1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <urn:c1>; <http://www.w3.org/2000/01/rdf-schema#label> "Resource". <urn:r2> <http://www.w3.org/2000/01/rdf-schema#label> "Resource2"; <urn:p1> <urn:o1>.' 
+turtle = ""
+last_subject = ""
 
-channel.basic_publish(exchange='geiser',
-                      routing_key='classification-v1.test',
-                      body=message,
-	                  properties=properties)
+with gzip.open('sorted-tweets.n3.gz', 'rb') as f:
+  for line in f:
+    subject = line.split()[0]
+    if subject == last_subject:
+	turtle += line
+    else:
+    	channel.basic_publish(exchange='geiser',
+                              routing_key='classification-v1.test',
+                              body=turtle,
+	                      properties=properties)
+	#print("Next message:")
+	#print(turtle)
+        time.sleep(0.3)
+        turtle = line
+    last_subject = subject
 
-print(" [x] Sent turtle message to Service")
+# send last resource
+if turtle != "":
+	channel.basic_publish(exchange='geiser',
+                              routing_key='classification-v1.test',
+                              body=turtle,
+	                      properties=properties)
+	#print("Final message:")
+	#print(turtle)
+
+print(" [x] Sent JSON message to Service request message")
 connection.close()
