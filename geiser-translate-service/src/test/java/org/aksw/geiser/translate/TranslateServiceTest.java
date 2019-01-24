@@ -1,11 +1,13 @@
 package org.aksw.geiser.translate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.ValueFactory;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
+import org.eclipse.rdf4j.model.util.Models;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,33 +20,27 @@ import net.minidev.json.parser.ParseException;
 @SpringBootTest
 public class TranslateServiceTest {
 
-	private JSONObject testMessage;
-
-	// @Bean
-	// private String[] attributePath() {
-	// return new String[] { "data", "text" };
-	// }
-
-	// @Autowired
-	// private GeiserTranslateServiceConfiguration
-	// geiserTranslateServiceConfiguration;
+	private Model testModel;
+	
+	private ValueFactory vf;
 
 	@Autowired
 	private TranslateService translateService;
+	
 
 	@Before
 	public void setUp() throws Exception {
-		testMessage = new JSONObject(
-				"{\"route\": \"fox-v1\",\"data\": {\"text\": \"Der Philosoph und Mathematiker Leibniz.\"}}");
+		testModel = TranslateServiceTestFixtures.createTestModel();
+		vf = SimpleValueFactory.getInstance();
 	}
 
 	@Test
-	@Ignore("needs API key, TODO mock translator")
-	public void testTranslateMessage() throws JSONException, ParseException {
-		JSONObject translatedMessage = translateService.translateMessage(testMessage);
-		assertEquals(
-				"{\"route\":\"fox-v1\",\"data\":{\"text\":\"The philosopher and mathematician Leibniz.\",\"translation\":{\"original\":\"Der Philosoph und Mathematiker Leibniz.\",\"detectedSourceLanguage\":\"DE\"}}}",
-				translatedMessage.toString());
+	public void testTranslateMessage() throws ParseException {
+		Model translatedModel = translateService.translate(testModel);
+		// create expected result model
+		Model expectedModel = TranslateServiceTestFixtures.createTestModel();
+		expectedModel.add(vf.createIRI("urn:r1"), RDFS.LABEL, vf.createLiteral("Resource1 translated", "en"));
+		assertTrue(Models.isomorphic(translatedModel, expectedModel));
 	}
-
+	
 }

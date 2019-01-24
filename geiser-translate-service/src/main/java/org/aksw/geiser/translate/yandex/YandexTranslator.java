@@ -24,7 +24,7 @@ public class YandexTranslator implements Translator {
 		log.debug("Translating {} into {}", input, targetLanguage);
 		log.debug("Using API key {}", apiKey);
 		YTranslateApiImpl translateApiImpl = new YTranslateApiImpl(apiKey);
-		Translation translation = translateApiImpl.translationApi().translate(input, Language.EN);
+		Translation translation = translateApiImpl.translationApi().translate(input, Language.of(targetLanguage));
 		log.debug("Got translation {}", translation);
 		Optional<Language> sourceLanguage = translation.direction().source();
 		return new TranslationResult(translation.text(),
