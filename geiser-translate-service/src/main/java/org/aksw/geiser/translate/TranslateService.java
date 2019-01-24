@@ -56,15 +56,16 @@ public class TranslateService {
 	private String[] textProperties;
 
 	/**
-	 * Optional property for adding the translated text. If none is provided,
-	 * the original property will be used.
+	 * Optional property for adding the translated text. If none is provided
+	 * (default), the original property will be used.
 	 **/
-	@Value("${annotation_property}")
+	@Value("${annotation_property:}")
 	private String annotationProperty;
 
 	/**
 	 * ISO language code (2 characters) for the target language, e.g., EN or DE.
-	 * Will also be used for the language annotation of the new literal.
+	 * Will also be used for the language annotation of the new literal. There,
+	 * according to the RDF 1.1 specification it will be lowercase.
 	 **/
 	@Value("${target_language_code:EN}")
 	private String targetLanguageCode;
@@ -90,9 +91,8 @@ public class TranslateService {
 	}
 
 	public Model translate(Model model) {
-		Model matchingResources = StringUtils.isEmpty(subjectType) ?
-				model :
-				model.filter(null, RDF.TYPE, vf.createIRI(subjectType));
+		Model matchingResources = StringUtils.isEmpty(subjectType) ? model
+				: model.filter(null, RDF.TYPE, vf.createIRI(subjectType));
 
 		long addedStatements = 0;
 		for (IRI subject : Models.subjectIRIs(matchingResources)) {
@@ -104,7 +104,8 @@ public class TranslateService {
 					TranslationResult result = translateText(value);
 					IRI targetProperty = StringUtils.isEmpty(annotationProperty) ? prop
 							: vf.createIRI(annotationProperty);
-					Literal translatedObject = vf.createLiteral(result.getOutput(), targetLanguageCode);
+					Literal translatedObject = vf.createLiteral(result.getOutput(),
+							StringUtils.lowerCase(targetLanguageCode));
 					log.info("Adding translation for {} {}: {}", subject, targetProperty, translatedObject);
 					model.add(subject, targetProperty, translatedObject);
 					addedStatements++;

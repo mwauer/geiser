@@ -1,0 +1,10 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sioc: <http://rdfs.org/sioc/ns#> .
+@prefix : <http://example.org/> .
+
+:r1 rdf:type sioc:Post;
+	rdfs:label "Teetasse"@de.
+:r2 rdfs:comment "Dieser Text wird in der Standardkonfiguration nicht uebersetzt.";
+	rdfs:label "Nur uebersetzen ohne subject_type-Definition."@de.
