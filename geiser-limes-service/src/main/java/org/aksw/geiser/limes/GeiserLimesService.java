@@ -55,7 +55,7 @@ public class GeiserLimesService {
 					.setContentType("text/turtle;charset=utf-8").build();
 			rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(), ServiceUtils.nextRoutingKey(message),
 					result);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("Failed to handle LIMES request:", e);
 			rabbitTemplate.send(message.getMessageProperties().getReceivedExchange(), message.getMessageProperties().getReplyTo(),
 					MessageBuilder.withBody(("Failed to process LIMES request: "+e.getMessage()).getBytes(StandardCharsets.UTF_8))
