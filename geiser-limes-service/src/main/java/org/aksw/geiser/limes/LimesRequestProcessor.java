@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.aksw.limes.core.controller.Controller;
-import org.aksw.limes.core.controller.ResultMappings;
+import org.aksw.limes.core.controller.LimesResult;
 import org.aksw.limes.core.io.config.Configuration;
 import org.aksw.limes.core.io.config.reader.AConfigurationReader;
 import org.aksw.limes.core.io.config.reader.xml.XMLConfigurationReader;
@@ -50,7 +50,7 @@ public class LimesRequestProcessor {
 		FileUtils.writeStringToFile(new File(tempDir + "/status"), "1");
 		log.info("Starting processing of {}", filePath);
 
-		ResultMappings mappings = Controller.getMapping(config);
+		LimesResult mappings = Controller.getMapping(config);
 		log.info("Finished processing, preparing output for {}", filePath);
 		String outputFormat = config.getOutputFormat();
 		ISerializer output = SerializerFactory.createSerializer(outputFormat);

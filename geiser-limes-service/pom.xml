@@ -5,7 +5,7 @@
 
 	<groupId>org.aksw.geiser</groupId>
 	<artifactId>geiser-limes-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>geiser-limes-service</name>
@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
-		<limes.version>1.1.2</limes.version>
+		<limes.version>1.5.6</limes.version>
 		<docker.image.prefix>mwauer</docker.image.prefix>
 	</properties>
 
@@ -44,7 +44,7 @@
 		<dependency>
 			<groupId>org.aksw.geiser</groupId>
 			<artifactId>geiser-service-core</artifactId>
-			<version>0.0.2</version>
+			<version>0.0.3-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
@@ -60,7 +60,7 @@
 		
 		<!-- LIMES -->
 		<dependency>
-			<groupId>org.aksw.limes.core</groupId>
+			<groupId>org.aksw.limes</groupId>
 			<artifactId>limes-core</artifactId>
 			<version>${limes.version}</version>
 			<exclusions>
