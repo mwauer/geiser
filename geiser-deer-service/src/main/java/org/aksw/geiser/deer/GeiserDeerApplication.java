@@ -96,15 +96,22 @@ public class GeiserDeerApplication {
 		private static final String CONFIG_FILE_SUFFIX = ".ttl";
 
 		private RDFConfigExecutor getExecutor(Message payload) throws IOException {
-			Path tempFile = Files.createTempFile(new File(STORAGE_DIR_PATH).toPath(), CONFIG_FILE_PREFIX,
+			// prepare temporary paths
+			Path storageDirPath = new File(STORAGE_DIR_PATH).toPath();
+			if (!Files.isDirectory(storageDirPath)) {
+				Files.createDirectory(storageDirPath);
+			}
+			Path tempFile = Files.createTempFile(storageDirPath, CONFIG_FILE_PREFIX,
 					CONFIG_FILE_SUFFIX);
+			
 			log.debug("Storing configuration at {}", tempFile);
 			Files.copy(new ByteArrayInputStream(payload.getBody()), tempFile, StandardCopyOption.REPLACE_EXISTING);
 			log.debug("Parsing configuration ID");
 			String id = StringUtils.substringBetween(tempFile.toString(), CONFIG_FILE_PREFIX, CONFIG_FILE_SUFFIX);
 			log.debug("Got configuration ID: {}", id);
+			
 			RDFConfigExecutor executor = new RDFConfigExecutor(tempFile.toString(),
-					new RunContext(Long.parseLong(id), id));
+					new RunContext(Long.parseLong(id), ""));
 			log.info("Prepared DEER executor for ID: {}", id);
 			return executor;
 		}

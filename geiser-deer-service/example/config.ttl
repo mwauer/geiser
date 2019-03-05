@@ -1,0 +1,25 @@
+@prefix : <http://geoknow.org/specsontology/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
+
+:d1		a				:Dataset ;
+		:inputFile			"/tmp/firstSource.ttl" .
+:d2		a				:Dataset ;
+		:inputFile			"/tmp/secondSource.ttl" .
+:d3		a				:Dataset ;
+		:outputFile			"/tmp/output.ttl" ;
+		:outputFormat			"TURTLE" .
+
+:o1		a			:Operator, :GeoFusionOperator ;
+		rdfs:label		"Geospatial Fusion operator" ;
+		:hasInput		:d1, :d2 ;
+		:hasOutput		:d3 ;
+		:hasParameter		:p1-1, :p1-2.
+
+:p1-1	a				:OperatorParameter ;
+		:hasKey			"fusionAction" ;
+		:hasValue		"takeMostDetailed" .
+
+:p1-2	a				:OperatorParameter ;
+		:hasKey			"mergeOtherStatements" ;
+		:hasValue		"true" .
